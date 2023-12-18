@@ -1,6 +1,5 @@
 import UserButton from "./components/UserButton";
 import ApiData from "./components/ApiData";
-import PingData from "./components/PingData";
 
 export const metadata = {
   title: "GnarDay",
@@ -13,7 +12,6 @@ export default function Home() {
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
         <UserButton />
       </div>
-      <PingData />
       <ApiData />
     </main>
   );

@@ -19,11 +19,12 @@ function toEpochSeconds(dateString: string) {
 interface Activity {
   name: string;
   sport_type: string;
-  start_date: string;
+  start_date_local: string;
 }
+
 interface FormattedResults {
-  activities: Activity[];
-  count: number;
+  activityCount: number;
+  dayCount: number;
   dateRange: string[];
 }
 
@@ -32,20 +33,28 @@ function formatResults(results: Activity[]): FormattedResults {
     DEFAULT_SPORT_TYPES.includes(result.sport_type)
   );
 
-  const activities = filtered.map(({ name, sport_type, start_date }) => ({
+  const activities = filtered.map(({ name, sport_type, start_date_local }) => ({
     name,
     sport_type,
-    start_date,
+    start_date_local,
   }));
 
   return {
-    activities,
-    count: activities.length,
+    activityCount: activities.length,
+    dayCount: getUniqueDayCount(activities),
     dateRange: [
-      activities[0].start_date,
-      activities[activities.length - 1].start_date,
+      activities[0].start_date_local,
+      activities[activities.length - 1].start_date_local,
     ],
   };
+}
+
+function getUniqueDayCount(activities: Activity[]) {
+  const datesWithoutTime = activities.map(
+    ({ start_date_local }) => start_date_local.split("T")[0]
+  );
+
+  return new Set(datesWithoutTime).size;
 }
 
 const START_DATE = "2023-11-01";
@@ -55,7 +64,7 @@ export const GET = auth(async (req): Promise<void | Response> => {
     try {
       const params = new URLSearchParams({
         after: toEpochSeconds(START_DATE).toString(),
-        // per_page: "200",
+        per_page: "200",
       });
 
       const url = `${URL}?${params}`;
@@ -76,4 +85,4 @@ export const GET = auth(async (req): Promise<void | Response> => {
   }
 
   return Response.json({ message: "Not authenticated" }, { status: 401 });
-}) as unknown as Promise<void | Response>;
+});
