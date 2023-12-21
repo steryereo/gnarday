@@ -8,12 +8,7 @@ export default async function SignOut() {
         await signOut();
       }}
     >
-      <button
-        className="text-white py-1 px-2 bg-purple-600 m-1 rounded-md"
-        type="submit"
-      >
-        Sign Out
-      </button>
+      <button type="submit">Sign Out</button>
     </form>
   );
 }
