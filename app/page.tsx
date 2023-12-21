@@ -1,5 +1,6 @@
-import UserButton from "./components/UserButton";
 import ApiData from "./components/ApiData";
+import UserButton from "./components/UserButton";
+import UserImage from "./components/UserImage";
 
 export const metadata = {
   title: "GnarDay",
@@ -8,9 +9,10 @@ export const metadata = {
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <UserButton />
+    <main className="flex min-h-screen flex-col items-center p-12">
+      <UserImage />
       <ApiData />
+      <UserButton />
     </main>
   );
 }
