@@ -7,9 +7,13 @@ export default async function SignOut() {
         "use server";
         await signOut();
       }}
-      className="w-full"
     >
-      <button className="w-full p-0">Sign Out</button>
+      <button
+        className="text-white py-1 px-2 bg-purple-600 m-1 rounded-md"
+        type="submit"
+      >
+        Sign Out
+      </button>
     </form>
   );
 }
