@@ -20,10 +20,7 @@ export default function ApiData() {
   const { dayCount, activityCount } = data;
 
   return (
-    <div
-      style={{ textWrap: "pretty" }} // TODO: no style attribute
-      className="flex flex-col items-center font-mono text-center my-16"
-    >
+    <>
       <p className="text-2xl">You&apos;ve spent</p>
       <Count count={dayCount} />
       <p className="text-2xl">days on the snow this season</p>
@@ -32,6 +29,6 @@ export default function ApiData() {
           And you got {activityCount} activities in there. Hell yeah!
         </p>
       ) : null}
-    </div>
+    </>
   );
 }
