@@ -11,22 +11,14 @@ export default async function UserButton() {
   if (!session?.user) return <SignIn />;
 
   return (
-    <div>
-      <p>
-        {session.user.image ? (
-          <Image
-            width={100}
-            height={100}
-            src={session.user.image}
-            alt={session.user.name ?? ""}
-          />
-        ) : null}
-
-        {session.user.name}
-      </p>
-      <p className="text-xs leading-none text-muted-foreground">
-        {session.user.email}
-      </p>
+    <div className="flex flex-col items-center">
+      <Image
+        className="rounded-full"
+        width={150}
+        height={150}
+        src={session.user.image ?? ""}
+        alt={session.user.name ?? ""}
+      />
       <SignOut />
     </div>
   );

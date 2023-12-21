@@ -1,25 +1,34 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
+import Count from "./Count";
 
 export default function ApiData() {
-  const [data, setData] = useState()
+  const [data, setData] = useState(null);
 
   useEffect(() => {
-      fetch("/api/activities")
-        .then(res => res.json())
-        .then(json => {
-          setData(json)        
-        })
-        .catch(err => console.error(err))
-    }, [])
+    fetch("/api/activities")
+      .then((res) => res.json())
+      .then((json) => {
+        setData(json);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
-  
+  if (!data) return <p>Loading...</p>;
+
+  const { dayCount, activityCount } = data;
+
   return (
-    <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-      <pre>
-        <code>{JSON.stringify(data, null, 2)}</code>
-      </pre>
+    <div className="flex flex-col items-center font-mono">
+      <p className="text-2xl">You&apos;ve spent</p>
+      <Count count={dayCount} />
+      <p className="text-2xl">days on the snow this season</p>
+      {activityCount > dayCount ? (
+        <p className="mt-10">
+          And you got {activityCount} activities in there. Hell yeah!
+        </p>
+      ) : null}
     </div>
-  )
+  );
 }
