@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { auth } from "@/auth";
+import { auth } from "@/src/auth";
 
 export default async function UserImage() {
   const session = await auth();

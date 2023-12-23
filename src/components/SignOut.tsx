@@ -1,4 +1,4 @@
-import { signOut } from "@/auth";
+import { signOut } from "@/src/auth";
 
 export default async function SignOut() {
   return (
