@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-
 import Strava from "next-auth/providers/strava";
 
 import type { NextAuthConfig } from "next-auth";
@@ -19,16 +18,20 @@ export const config = {
   ],
   callbacks: {
     async jwt({ token, account }) {
-      // Persist the OAuth access_token to the token right after signin
+      // Persist the OAuth refresh_token to the token right after signin
       if (account) {
-        token.accessToken = account.access_token;
+        const { refresh_token } = account;
+
+        return { ...token, refresh_token };
       }
 
       return token;
     },
     async session({ session, token }) {
       // TODO: this is a hack. find a better way https://github.com/nextauthjs/next-auth/issues/9122
-      return { ...session, ...token };
+      const { refresh_token } = token;
+
+      return { ...session, refresh_token };
     },
   },
 } satisfies NextAuthConfig;
