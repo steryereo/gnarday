@@ -5,6 +5,7 @@ import Count from "./Count";
 
 export default function ApiData() {
   const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetch("/api/activities")
@@ -12,8 +13,12 @@ export default function ApiData() {
       .then((json) => {
         setData(json);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        setError(err);
+      });
   }, []);
+
+  if (error) return <p>Something went wrong. Please try again</p>;
 
   if (!data) return <p>Loading...</p>;
 
