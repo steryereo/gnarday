@@ -1,6 +1,6 @@
-import ApiData from "./components/ApiData";
-import UserButton from "./components/UserButton";
-import UserImage from "./components/UserImage";
+import ApiData from "../components/ApiData";
+import UserButton from "../components/UserButton";
+import UserImage from "../components/UserImage";
 
 export const metadata = {
   title: "GnarDay",
