@@ -1,4 +1,4 @@
-import { auth } from "@/auth";
+import { auth } from "@/src/auth";
 
 import SignIn from "./SignIn";
 import SignOut from "./SignOut";
