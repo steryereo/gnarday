@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Count from "./Count";
 
 export default function ApiData() {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState({ dayCount: null, activityCount: null });
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -20,20 +20,20 @@ export default function ApiData() {
 
   if (error) return <p>Something went wrong. Please try again</p>;
 
-  if (!data) return <p>Loading...</p>;
-
-  const { dayCount, activityCount } = data;
+  const { dayCount } = data;
 
   return (
     <>
-      <p className="text-2xl">You&apos;ve spent</p>
-      <Count count={dayCount} />
-      <p className="text-2xl">days on the snow this season</p>
-      {activityCount > dayCount ? (
-        <p className="mt-8">
-          And you got {activityCount} activities in there. Hell yeah!
-        </p>
-      ) : null}
+      <p className="text-6xl font-bold uppercase leading-snug">You have</p>
+      <div className="mt-2 mb-6">
+        <Count count={dayCount} />
+      </div>
+      <p className="text-2xl font-semibold uppercase leading-normal">
+        days on the snow
+      </p>
+      <p className="text-2xl font-semibold uppercase leading-normal">
+        this season
+      </p>
     </>
   );
 }

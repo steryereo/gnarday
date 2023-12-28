@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { coptek } from "../lib/fonts";
+import UserImage from "./UserImage";
 
 const DELAY_DECAY_FACTOR = 0.85;
 const INIT_DELAY = 100;
@@ -19,14 +21,19 @@ function computeDelays(count: number) {
   return delays;
 }
 
-export default function Count({ count }: { count: number }) {
+export default function Count({ count }: { count: number | null }) {
   const [displayCount, setDisplayCount] = useState(0);
 
+  const isLoading = count === null;
+
   const delays = useMemo(() => {
+    if (isLoading) return [];
+
     return computeDelays(count);
-  }, [count]);
+  }, [count, isLoading]);
 
   useEffect(() => {
+    if (isLoading) return;
     if (displayCount === count) return;
 
     const delay = delays[displayCount];
@@ -34,7 +41,21 @@ export default function Count({ count }: { count: number }) {
     setTimeout(() => {
       setDisplayCount(displayCount + 1);
     }, delay);
-  }, [count, delays, displayCount]);
+  }, [count, delays, displayCount, isLoading]);
 
-  return <p className="text-8xl m-4">{displayCount}</p>;
+  return (
+    <div className="relative">
+      <UserImage />
+      <div className="absolute left-0 top-0 right-0 bottom-0 flex items-center justify-center">
+        <p
+          // this font is weird. needs nudging
+          className={`${coptek.className} ${
+            isLoading ? "text-[2.5rem]" : "text-[11rem]"
+          } relative top-[0.12em] right-[0.025em] text-yellow drop-shadow-solid-onyx font-bold`}
+        >
+          {isLoading ? "Loading..." : displayCount}
+        </p>
+      </div>
+    </div>
+  );
 }
