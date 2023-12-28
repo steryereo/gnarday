@@ -7,7 +7,7 @@ export default async function UserButton() {
   const session = await auth();
 
   return (
-    <div className="text-sm font-mono">
+    <div className="text-sm mt-8">
       {session?.user ? <SignOut /> : <SignIn />}
     </div>
   );

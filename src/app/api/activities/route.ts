@@ -1,5 +1,9 @@
 import { auth } from "@/src/auth";
-import { formatResults, getActivities, refreshAccessToken } from "@/src/strava";
+import {
+  formatResults,
+  getActivities,
+  refreshAccessToken,
+} from "@/src/lib/strava";
 
 export const GET = auth(async (req): Promise<void | Response> => {
   if (req.auth) {
