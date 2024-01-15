@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { useSession } from "next-auth/react";
 
-export default function UserImage() {
-  const { data: session } = useSession();
+import { auth } from "@/src/auth";
+
+export default async function UserImage() {
+  const session = await auth();
 
   return (
     <div className="relative rounded-full border-onyx border-4">
@@ -10,7 +11,7 @@ export default function UserImage() {
       <div className="bg-pink absolute top-[25px] left-[25px] rounded-full overflow-hidden border-white border-2">
         {session?.user?.image ? (
           <Image
-            className="rounded-full mix-blend-color-dodge grayscale contrast-200 animate-fade"
+            className="rounded-full mix-blend-color-dodge grayscale contrast-200"
             width={150}
             height={150}
             src={session?.user?.image ?? ""}
