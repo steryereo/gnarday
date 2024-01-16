@@ -4,15 +4,17 @@ import Strava from "next-auth/providers/strava";
 import type { NextAuthConfig } from "next-auth";
 
 export const config = {
-  // theme: {
-  //   logo: "https://next-auth.js.org/img/logo/logo-sm.png",
-  // },
   providers: [
     Strava({
       authorization: {
         params: {
           scope: "activity:read_all",
         },
+      },
+      style: {
+        bg: "#FC4C02",
+        logo: "",
+        text: "#FFF",
       },
     }),
   ],
