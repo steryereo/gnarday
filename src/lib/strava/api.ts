@@ -1,4 +1,5 @@
 import { ACTIVITIES_URL, START_DATE, TOKEN_URL } from "./constants";
+import { SummaryActivity } from "./types";
 
 // TODO: use date-fns instead?
 function toEpochSeconds(dateString: string) {
@@ -30,7 +31,7 @@ export async function refreshAccessToken(refresh_token: string) {
 export async function getActivities(
   accessToken: string,
   startDate: string = START_DATE
-) {
+): Promise<SummaryActivity[]> {
   const params = new URLSearchParams({
     after: toEpochSeconds(startDate).toString(),
     per_page: "200",
