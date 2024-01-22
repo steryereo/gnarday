@@ -1,18 +1,19 @@
 import { DEFAULT_SPORT_TYPES } from "./constants";
+import { SummaryActivity } from "./types";
 
-interface Activity {
-  name: string;
-  sport_type: string;
-  start_date_local: string;
-}
-
-interface FormattedResults {
+export interface FormattedResults {
   activityCount: number;
   dayCount: number;
   dateRange: string[];
 }
 
-function getUniqueDayCount(activities: Activity[]) {
+function getUniqueDayCount(
+  activities: {
+    name: string;
+    sport_type: string;
+    start_date_local: string;
+  }[]
+) {
   const datesWithoutTime = activities.map(
     ({ start_date_local }) => start_date_local.split("T")[0]
   );
@@ -20,7 +21,7 @@ function getUniqueDayCount(activities: Activity[]) {
   return new Set(datesWithoutTime).size;
 }
 
-export function formatResults(results: Activity[]): FormattedResults {
+export function formatResults(results: SummaryActivity[]): FormattedResults {
   const filtered = results.filter((result) =>
     DEFAULT_SPORT_TYPES.includes(result.sport_type)
   );

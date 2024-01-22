@@ -56,7 +56,7 @@ export const ALL_SPORT_TYPES = [
   "Windsurf",
   "Workout",
   "Yoga",
-];
+] as const;
 
 export const DEFAULT_SPORT_TYPES = [
   "AlpineSki",
