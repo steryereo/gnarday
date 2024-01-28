@@ -23,7 +23,8 @@ const FORMATTED_RESULTS = {
 describe("getData", () => {
   describe("when not logged in", () => {
     test("throws an error", () => {
-      vi.mocked(auth).mockResolvedValueOnce(null);
+      // @ts-expect-error https://github.com/nextauthjs/next-auth-example/blob/main/app/api/protected/route.ts#L9C11-L9C44
+      vi.mocked(auth).mockResolvedValue(null);
 
       expect(() => getData()).rejects.toThrowError("unauthorized");
     });
@@ -31,7 +32,8 @@ describe("getData", () => {
 
   describe("when logged in", () => {
     beforeEach(() => {
-      vi.mocked(auth).mockResolvedValueOnce({ refresh_token: REFRESH_TOKEN });
+      // @ts-expect-error https://github.com/nextauthjs/next-auth-example/blob/main/app/api/protected/route.ts#L9C11-L9C44
+      vi.mocked(auth).mockResolvedValue({ refresh_token: REFRESH_TOKEN });
       vi.mocked(refreshAccessToken).mockResolvedValue({
         access_token: ACCESS_TOKEN,
       });
