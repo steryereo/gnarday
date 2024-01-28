@@ -1,4 +1,4 @@
-import { MetaAthlete, PolyLineMap } from "../types";
+import { MetaAthlete, PolyLineMap, SummaryActivity } from "../types";
 
 export const META_ATHLETE: MetaAthlete = {
   id: 12345,
@@ -12,7 +12,7 @@ export const POLYLINE_MAP: PolyLineMap = {
   resource_state: 2,
 };
 
-export const ACTIVITY = {
+export const SUMMARY_ACTIVITY: SummaryActivity = {
   resource_state: 2,
   athlete: META_ATHLETE,
   name: "Afternoon Snowboard",

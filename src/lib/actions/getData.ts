@@ -18,7 +18,5 @@ export async function getData() {
 
   const activities = await getActivities(access_token);
 
-  console.log(JSON.stringify(activities, null, 2));
-
   return formatResults(activities);
 }
