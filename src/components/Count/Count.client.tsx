@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import CounterText from "../CounterText";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const DELAY_DECAY_FACTOR = 0.85;
 const INIT_DELAY = 100;
@@ -21,21 +22,36 @@ function computeDelays(count: number) {
 }
 
 export default function ClientCount({ count }: { count: number }) {
-  const [displayCount, setDisplayCount] = useState(0);
-
-  const delays = useMemo(() => {
-    return computeDelays(count);
-  }, [count]);
+  const countRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    if (displayCount === count) return;
+    let displayCount = 0;
+    let delays = computeDelays(count);
 
-    const delay = delays[displayCount];
+    function tick() {
+      if (displayCount === count) return;
 
-    setTimeout(() => {
-      setDisplayCount(displayCount + 1);
-    }, delay);
-  }, [count, delays, displayCount]);
+      const delay = delays[displayCount];
 
-  return <CounterText className="text-[11rem]">{displayCount}</CounterText>;
+      displayCount++;
+
+      // Directly set the text content because state was glitching out
+      if (countRef.current) {
+        countRef.current.textContent = displayCount.toString();
+      }
+
+      setTimeout(() => {
+        requestAnimationFrame(tick);
+      }, delay);
+    }
+
+    tick();
+  }, []);
+
+  return (
+    <CounterText className="text-[11rem]">
+      <VisuallyHidden>{count}</VisuallyHidden>
+      <span aria-hidden ref={countRef} />
+    </CounterText>
+  );
 }
