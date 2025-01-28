@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import CounterText from "../CounterText";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
@@ -26,7 +26,7 @@ export default function ClientCount({ count }: { count: number }) {
 
   useEffect(() => {
     let displayCount = 0;
-    let delays = computeDelays(count);
+    const delays = computeDelays(count);
 
     function tick() {
       if (displayCount === count) return;
@@ -46,7 +46,7 @@ export default function ClientCount({ count }: { count: number }) {
     }
 
     tick();
-  }, []);
+  }, [count]);
 
   return (
     <CounterText className="text-[11rem]">
