@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
+import NextAuth from "next-auth";
 
-import { auth } from "./auth";
+import authConfig from "./auth.config";
+
+// https://authjs.dev/guides/edge-compatibility
+const { auth } = NextAuth(authConfig);
 
 export default auth((request) => {
   if (!request.auth) {
