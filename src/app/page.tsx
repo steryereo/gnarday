@@ -2,7 +2,7 @@ import { Suspense } from "react";
 
 import Count from "@/src/components/Count";
 import CounterText from "@/src/components/CounterText";
-import UserButton from "@/src/components/UserButton";
+import PreferencesDrawer from "@/src/components/PreferencesDrawer";
 import UserImage from "@/src/components/UserImage";
 
 export const metadata = {
@@ -34,7 +34,7 @@ export default function Home() {
       <p className="text-2xl font-semibold uppercase leading-normal">
         this season
       </p>
-      <UserButton />
+      <PreferencesDrawer className="mt-auto" />
     </main>
   );
 }
