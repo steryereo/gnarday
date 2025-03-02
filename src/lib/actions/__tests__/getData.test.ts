@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
+
 import { auth } from "@/src/auth";
 import {
   formatResults,

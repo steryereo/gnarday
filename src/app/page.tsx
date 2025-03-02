@@ -1,8 +1,9 @@
+import { Suspense } from "react";
+
 import Count from "@/src/components/Count";
 import CounterText from "@/src/components/CounterText";
 import UserButton from "@/src/components/UserButton";
 import UserImage from "@/src/components/UserImage";
-import { Suspense } from "react";
 
 export const metadata = {
   title: "GnarDay",

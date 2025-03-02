@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import CounterText from "../CounterText";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+
+import CounterText from "../CounterText";
 
 const DELAY_DECAY_FACTOR = 0.85;
 const INIT_DELAY = 100;
