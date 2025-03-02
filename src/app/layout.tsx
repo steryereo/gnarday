@@ -1,6 +1,7 @@
+import type { Metadata } from "next";
+
 import { libreFranklin } from "../lib/fonts";
 
-import type { Metadata } from "next";
 
 import "./globals.css";
 
