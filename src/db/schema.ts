@@ -1,14 +1,16 @@
 import {
   boolean,
+  pgSchema,
   timestamp,
-  pgTable,
   text,
   primaryKey,
   integer,
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
-export const users = pgTable("user", {
+export const nextAuthSchema = pgSchema("nextauth");
+
+export const users = nextAuthSchema.table("user", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
@@ -18,7 +20,7 @@ export const users = pgTable("user", {
   image: text("image"),
 });
 
-export const accounts = pgTable(
+export const accounts = nextAuthSchema.table(
   "account",
   {
     userId: text("userId")
@@ -44,7 +46,7 @@ export const accounts = pgTable(
   ]
 );
 
-export const sessions = pgTable("session", {
+export const sessions = nextAuthSchema.table("session", {
   sessionToken: text("sessionToken").primaryKey(),
   userId: text("userId")
     .notNull()
@@ -52,7 +54,7 @@ export const sessions = pgTable("session", {
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
-export const verificationTokens = pgTable(
+export const verificationTokens = nextAuthSchema.table(
   "verificationToken",
   {
     identifier: text("identifier").notNull(),
@@ -68,7 +70,7 @@ export const verificationTokens = pgTable(
   ]
 );
 
-export const authenticators = pgTable(
+export const authenticators = nextAuthSchema.table(
   "authenticator",
   {
     credentialID: text("credentialID").notNull().unique(),
