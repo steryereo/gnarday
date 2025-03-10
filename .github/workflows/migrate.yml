@@ -7,6 +7,9 @@ jobs:
     if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     environment: production
+    strategy:
+      matrix:
+        node-version: [20]
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
@@ -21,6 +24,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Migrate Database
-        run: npx drizzle-kit migrate
+        run: pnpm drizzle-kit migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
