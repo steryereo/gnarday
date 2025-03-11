@@ -15,6 +15,20 @@
       "when": 1741581036970,
       "tag": "0001_black_caretaker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1741669304507,
+      "tag": "0002_friendly_shinobi_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1741672051880,
+      "tag": "0003_petite_sister_grimm",
+      "breakpoints": true
     }
   ]
 }
