@@ -1,3 +1,125 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-white: 0, 0%, 100%;
+
+    --color-pink-100: 336, 97%, 14%;
+    --color-pink-200: 336, 97%, 28%;
+    --color-pink-300: 336, 97%, 42%;
+    --color-pink-400: 336, 97%, 56%;
+    --color-pink-500: 336, 97%, 70%;
+    --color-pink-600: 336, 97%, 76%;
+    --color-pink-700: 336, 98%, 82%;
+    --color-pink-800: 337, 97%, 88%;
+    --color-pink-900: 336, 100%, 94%;
+    --color-pink-default: var(--color-pink-500);
+
+    --color-blue-100: 210, 75%, 13%;
+    --color-blue-200: 210, 76%, 25%;
+    --color-blue-300: 210, 76%, 37%;
+    --color-blue-400: 210, 76%, 50%;
+    --color-blue-500: 210, 76%, 62%;
+    --color-blue-600: 210, 75%, 70%;
+    --color-blue-700: 210, 76%, 77%;
+    --color-blue-800: 211, 77%, 85%;
+    --color-blue-900: 209, 74%, 92%;
+    --color-blue-default: var(--color-blue-500);
+
+    --color-onyx-100: 180, 5%, 4%;
+    --color-onyx-200: 180, 5%, 8%;
+    --color-onyx-300: 200, 5%, 13%;
+    --color-onyx-400: 195, 5%, 17%;
+    --color-onyx-500: 192, 5%, 21%;
+    --color-onyx-600: 192, 5%, 37%;
+    --color-onyx-700: 190, 5%, 53%;
+    --color-onyx-800: 187, 5%, 68%;
+    --color-onyx-900: 195, 5%, 84%;
+    --color-onyx-default: var(--color-onyx-500);
+
+    --color-green-100: 142, 68%, 11%;
+    --color-green-200: 142, 66%, 22%;
+    --color-green-300: 142, 67%, 33%;
+    --color-green-400: 142, 67%, 44%;
+    --color-green-500: 142, 67%, 55%;
+    --color-green-600: 142, 67%, 64%;
+    --color-green-700: 142, 67%, 73%;
+    --color-green-800: 142, 67%, 82%;
+    --color-green-900: 142, 65%, 91%;
+    --color-green-default: var(--color-green-500);
+
+    --color-yellow-100: 60, 96%, 10%;
+    --color-yellow-200: 60, 96%, 20%;
+    --color-yellow-300: 60, 96%, 31%;
+    --color-yellow-400: 60, 96%, 41%;
+    --color-yellow-500: 60, 96%, 51%;
+    --color-yellow-600: 60, 96%, 61%;
+    --color-yellow-700: 60, 96%, 71%;
+    --color-yellow-800: 60, 96%, 80%;
+    --color-yellow-900: 60, 96%, 90%;
+    --color-yellow-default: var(--color-yellow-500);
+
+    --background: var(--color-white);
+    --foreground: var(--color-onyx-default);
+    --card: var(--color-white);
+    --card-foreground: var(--color-onyx-default);
+    --popover: var(--color-white);
+    --popover-foreground: var(--color-onyx-default);
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
