@@ -1,12 +1,12 @@
 {
-  "id": "7d4a2674-7c30-4c30-bcba-e98139ba03fa",
+  "id": "3978a5c3-5977-45d9-915b-3b5472485ab4",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.account": {
+    "nextauth.account": {
       "name": "account",
-      "schema": "",
+      "schema": "nextauth",
       "columns": {
         "userId": {
           "name": "userId",
@@ -81,6 +81,7 @@
           "name": "account_userId_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
+          "schemaTo": "nextauth",
           "columnsFrom": [
             "userId"
           ],
@@ -97,9 +98,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.authenticator": {
+    "nextauth.authenticator": {
       "name": "authenticator",
-      "schema": "",
+      "schema": "nextauth",
       "columns": {
         "credentialID": {
           "name": "credentialID",
@@ -156,6 +157,7 @@
           "name": "authenticator_userId_user_id_fk",
           "tableFrom": "authenticator",
           "tableTo": "user",
+          "schemaTo": "nextauth",
           "columnsFrom": [
             "userId"
           ],
@@ -180,9 +182,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.session": {
+    "nextauth.session": {
       "name": "session",
-      "schema": "",
+      "schema": "nextauth",
       "columns": {
         "sessionToken": {
           "name": "sessionToken",
@@ -209,6 +211,7 @@
           "name": "session_userId_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
+          "schemaTo": "nextauth",
           "columnsFrom": [
             "userId"
           ],
@@ -225,9 +228,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.user": {
+    "nextauth.user": {
       "name": "user",
-      "schema": "",
+      "schema": "nextauth",
       "columns": {
         "id": {
           "name": "id",
@@ -276,9 +279,9 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.verificationToken": {
+    "nextauth.verificationToken": {
       "name": "verificationToken",
-      "schema": "",
+      "schema": "nextauth",
       "columns": {
         "identifier": {
           "name": "identifier",
@@ -309,7 +312,9 @@
     }
   },
   "enums": {},
-  "schemas": {},
+  "schemas": {
+    "nextauth": "nextauth"
+  },
   "sequences": {},
   "roles": {},
   "policies": {},

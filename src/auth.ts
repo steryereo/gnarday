@@ -4,9 +4,14 @@ import type { NextAuthConfig } from "next-auth";
 
 import authConfig from "./auth.config";
 import { db } from "./db";
-
+import { users, accounts, sessions, verificationTokens } from "./db/schema";
 export const config = {
-  adapter: DrizzleAdapter(db),
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
+  }),
   session: { strategy: "jwt" },
   callbacks: {
     async jwt({ token, account }) {
