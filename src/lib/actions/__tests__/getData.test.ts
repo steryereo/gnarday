@@ -8,7 +8,7 @@ import {
 } from "@/src/lib/strava";
 
 import { SUMMARY_ACTIVITY } from "../../strava/__fixtures__";
-import { getData } from "../getData";
+import { getData } from "../stravaActions";
 
 vi.mock("@/src/auth");
 vi.mock("@/src/lib/strava");

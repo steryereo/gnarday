@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { libreFranklin } from "../lib/fonts";
 
-
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,7 +16,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${libreFranklin.className} text-onyx`}>{children}</body>
+      <body className={`${libreFranklin.className} text-onyx`}>
+        <div className="min-h-dvh flex flex-col text-pretty p-12">
+          {children}
+        </div>
+      </body>
     </html>
   );
 }

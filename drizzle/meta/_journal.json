@@ -15,6 +15,20 @@
       "when": 1742274802071,
       "tag": "0001_remarkable_magneto",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1743056130322,
+      "tag": "0002_abandoned_whiplash",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1743056485325,
+      "tag": "0003_tense_the_anarchist",
+      "breakpoints": true
     }
   ]
 }
