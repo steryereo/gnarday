@@ -1,14 +1,20 @@
-import { signIn } from "@/src/auth";
+"use client";
 
-export default async function SignIn({ provider }: { provider?: string }) {
+import { signIn } from "@/src/lib/auth-client";
+
+import { Button } from "./ui/button";
+
+export default function SignIn() {
+  function handleClick() {
+    signIn.oauth2({
+      providerId: "strava",
+      callbackURL: "/",
+    });
+  }
+
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signIn(provider);
-      }}
-    >
-      <button type="submit">Sign In</button>
-    </form>
+    <Button type="button" onClick={handleClick}>
+      Sign In
+    </Button>
   );
 }
