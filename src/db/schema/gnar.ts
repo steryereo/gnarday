@@ -8,7 +8,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { timestamps } from "../helpers";
-import { users } from "./nextauth";
+import { user } from "./auth";
 
 export const gnarSchema = pgSchema("gnar");
 
@@ -83,7 +83,7 @@ export const lineScores = gnarSchema.table("line_scores", {
     .references(() => lines.id),
   userId: text("user_id")
     .notNull()
-    .references(() => users.id),
+    .references(() => user.id),
   date: date("date"),
   time: time("time"),
   notes: text("notes"),
@@ -96,7 +96,7 @@ export const nonLineRelatedEcpScores = gnarSchema.table(
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: text("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => user.id),
     nonLineRelatedEcpId: integer("non_line_related_ecp_id")
       .notNull()
       .references(() => nonLineRelatedEcps.id),

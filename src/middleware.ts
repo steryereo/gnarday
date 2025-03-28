@@ -1,24 +1,24 @@
-import { NextResponse } from "next/server";
-import NextAuth from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { getSessionCookie } from "better-auth/cookies";
 
-import authConfig from "./auth.config";
+export async function middleware(request: NextRequest) {
+  const sessionCookie = getSessionCookie(request);
 
-// https://authjs.dev/guides/edge-compatibility
-const { auth } = NextAuth(authConfig);
-
-export default auth((request) => {
-  if (!request.auth) {
-    return NextResponse.redirect(new URL("api/auth/signin", request.url));
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/login", request.url));
   }
-});
+
+  return NextResponse.next();
+}
 
 export const config = {
   /*
    * Match all request paths except for the ones starting with:
    * - api (API routes, also includes auth routes)
+   * - login (auth routes)
    * - _next/static (static files)
    * - _next/image (image optimization files)
    * - favicon.ico (favicon file)
    */
-  matcher: ["/((?!api|_next/static|favicon.ico).*)"],
+  matcher: ["/((?!api|login|_next/static|favicon.ico).*)"],
 };

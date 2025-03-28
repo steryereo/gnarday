@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import SignOut from "./SignOut";
+import LogoutButton from "./LogoutButton";
 
 export default async function PreferencesDrawer({
   className,
@@ -27,7 +27,7 @@ export default async function PreferencesDrawer({
           <SheetTitle>Settings</SheetTitle>
         </SheetHeader>
         <div className="grid gap-4 py-4">
-          <SignOut />
+          <LogoutButton />
         </div>
       </SheetContent>
     </Sheet>
