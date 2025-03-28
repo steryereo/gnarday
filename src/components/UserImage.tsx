@@ -1,9 +1,11 @@
+"use client";
+
 import Image from "next/image";
 
-import { auth } from "@/src/auth";
+import { useSession } from "@/src/lib/auth-client";
 
-export default async function UserImage() {
-  const session = await auth();
+export default function UserImage() {
+  const { data: session } = useSession();
 
   return (
     <div className="relative rounded-full border-onyx border-4">
