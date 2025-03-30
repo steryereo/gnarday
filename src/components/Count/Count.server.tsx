@@ -1,4 +1,4 @@
-import { getData } from "@/src/lib/actions/getData";
+import { getData } from "@/src/lib/actions/stravaActions";
 
 import ClientCount from "./Count.client";
 

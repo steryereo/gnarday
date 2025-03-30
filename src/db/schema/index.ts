@@ -1,11 +1,4 @@
-export {
-  nextAuthSchema,
-  users,
-  accounts,
-  sessions,
-  verificationTokens,
-  authenticators,
-} from "./nextauth";
+export { user, session, account, verification } from "./auth";
 
 export {
   gnarSchema,
