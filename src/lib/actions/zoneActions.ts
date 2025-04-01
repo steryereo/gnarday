@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 import { db } from "@/src/db";
 import { zones } from "@/src/db/schema";
@@ -8,7 +8,10 @@ import { zones } from "@/src/db/schema";
 import { InsertZone } from "../zod-schemas/gnar";
 
 export async function getZones() {
-  const allZones = await db.select().from(zones);
+  const allZones = await db
+    .select()
+    .from(zones)
+    .orderBy(asc(zones.squallywoodPage));
 
   return allZones;
 }
