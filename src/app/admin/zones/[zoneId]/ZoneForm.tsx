@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/src/components/ui/button";
 import {
@@ -20,16 +21,17 @@ import {
 import { Input } from "@/src/components/ui/input";
 import { Textarea } from "@/src/components/ui/textarea";
 import { createZone, updateZone } from "@/src/lib/actions/zoneActions";
-
 type ZoneFormProps = {
   zone?: SelectZone;
 };
 
 export function ZoneForm({ zone }: ZoneFormProps) {
+  const router = useRouter();
+
   const defaultValues: InsertZone = {
-    name: zone?.name,
-    description: zone?.description,
-    directions: zone?.directions,
+    name: zone?.name ?? "",
+    description: zone?.description ?? "",
+    directions: zone?.directions ?? "",
     squallywoodPage: zone?.squallywoodPage,
   };
 
@@ -39,15 +41,19 @@ export function ZoneForm({ zone }: ZoneFormProps) {
   });
 
   async function submitForm(data: InsertZone) {
-    let result;
+    try {
+      if (zone?.id) {
+        await updateZone(data, zone.id);
+      } else {
+        await createZone(data);
+      }
 
-    if (zone?.id) {
-      result = await updateZone(data, zone.id);
-    } else {
-      result = await createZone(data);
+      router.push("/admin/zones");
+    } catch {
+      form.setError("root", {
+        message: "Something went wrong. Please try again.",
+      });
     }
-
-    console.log(result);
   }
 
   return (
@@ -132,6 +138,9 @@ export function ZoneForm({ zone }: ZoneFormProps) {
           <Button className="mt-4" type="submit">
             Save Zone
           </Button>
+          {form.formState.errors.root && (
+            <FormMessage>{form.formState.errors.root.message}</FormMessage>
+          )}
         </form>
       </Form>
     </div>
