@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-import { useSession } from "@/src/lib/auth-client";
+import { useSession } from "@/src/lib/auth/auth-client";
 
 export default function UserImage() {
   const { data: session } = useSession();

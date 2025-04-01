@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import { auth } from "@/src/lib/auth";
 import {
   formatResults,
   getActivities,
   refreshAccessToken,
 } from "@/src/lib/strava";
+import { auth } from "@/src/lib/auth/auth";
 
 import { SUMMARY_ACTIVITY } from "../../strava/__fixtures__";
 import { getData } from "../stravaActions";
