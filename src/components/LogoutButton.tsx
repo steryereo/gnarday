@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
-import { signOut } from "@/src/lib/auth-client";
+import { signOut } from "@/src/lib/auth/auth-client";
 
 import { Button } from "./ui/button";
 

@@ -8,6 +8,13 @@
       "when": 1743150812901,
       "tag": "0000_friendly_legion",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1743475482726,
+      "tag": "0001_silky_shaman",
+      "breakpoints": true
     }
   ]
 }

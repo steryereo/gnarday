@@ -1,10 +1,11 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { genericOAuth } from "better-auth/plugins";
+import { genericOAuth, admin } from "better-auth/plugins";
 
 import * as schema from "@/src/db/schema";
 
-import { db } from "../db";
+import { ac, admin as adminRole, user } from "./permissions";
+import { db } from "../../db";
 
 export const auth = betterAuth({
   account: {
@@ -17,27 +18,26 @@ export const auth = betterAuth({
     provider: "pg",
     schema,
   }),
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
   plugins: [
+    admin({
+      ac,
+      roles: { admin: adminRole, user },
+    }),
     genericOAuth({
       config: [
         {
           providerId: "strava",
-          // discoveryUrl?: string;
           authorizationUrl: "https://www.strava.com/oauth/authorize",
           tokenUrl: "https://www.strava.com/oauth/token",
-          // userInfoUrl: "https://www.strava.com/api/v3/athlete",
           clientId: process.env.AUTH_STRAVA_ID!,
           clientSecret: process.env.AUTH_STRAVA_SECRET!,
           scopes: ["activity:read_all"],
-          // redirectURI?: string;
-          // responseType?: string;
-          // prompt?: string;
-          // pkce?: boolean;
-          // accessType?: string;
-          // getUserInfo: async (tokens) => {
-          //   console.log(tokens);
-          //   return null;
-          // },
           getUserInfo: async (tokens) => {
             const response = await fetch(
               "https://www.strava.com/api/v3/athlete",

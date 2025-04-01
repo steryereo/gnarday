@@ -3,7 +3,7 @@
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import Image from "next/image";
 
-import { signIn } from "@/src/lib/auth-client";
+import { signIn } from "@/src/lib/auth/auth-client";
 import stravaBtn from "@/public/strava_btn.svg";
 
 export default function LoginButton() {
