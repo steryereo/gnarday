@@ -39,6 +39,7 @@ export default async function ZonePage() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Squallywood Page</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -53,6 +54,9 @@ export default async function ZonePage() {
               zones.map((zone) => (
                 <TableRow key={zone.id}>
                   <TableCell className="font-medium">{zone.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {zone.squallywoodPage}
+                  </TableCell>
                   <TableCell className="text-right">
                     <Button asChild>
                       <Link href={`/admin/zones/${zone.id}`}>
