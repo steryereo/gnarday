@@ -3,6 +3,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
 import {
@@ -26,6 +28,7 @@ type ZoneFormProps = {
 };
 
 export function ZoneForm({ zone }: ZoneFormProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   const defaultValues: InsertZone = {
@@ -41,6 +44,8 @@ export function ZoneForm({ zone }: ZoneFormProps) {
   });
 
   async function submitForm(data: InsertZone) {
+    setIsSubmitting(true);
+
     try {
       if (zone?.id) {
         await updateZone(data, zone.id);
@@ -50,6 +55,7 @@ export function ZoneForm({ zone }: ZoneFormProps) {
 
       router.push("/admin/zones");
     } catch {
+      setIsSubmitting(false);
       form.setError("root", {
         message: "Something went wrong. Please try again.",
       });
@@ -135,8 +141,8 @@ export function ZoneForm({ zone }: ZoneFormProps) {
             )}
           />
 
-          <Button className="mt-4" type="submit">
-            Save Zone
+          <Button className="mt-4" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? <Loader2 /> : "Save Zone"}
           </Button>
           {form.formState.errors.root && (
             <FormMessage>{form.formState.errors.root.message}</FormMessage>
