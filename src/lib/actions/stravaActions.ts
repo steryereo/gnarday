@@ -1,4 +1,5 @@
 "use server";
+import { redirect } from "next/navigation";
 
 import {
   formatResults,
@@ -22,7 +23,9 @@ async function getUpToDateAccessToken(account: {
   }
 
   if (account.accessTokenExpiresAt < new Date()) {
-    const { accessToken } = await refreshAccessToken(account.refreshToken);
+    const { access_token: accessToken } = await refreshAccessToken(
+      account.refreshToken
+    );
 
     return accessToken;
   }
@@ -35,7 +38,9 @@ export async function getData() {
 
   const token = await getUpToDateAccessToken(account);
 
-  if (!token) throw new Error("unauthorized");
+  if (!token) {
+    return redirect("/");
+  }
 
   const activities = await getActivities(token);
 

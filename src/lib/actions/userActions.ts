@@ -21,8 +21,6 @@ export async function getAccountForCurrentUser(provider: string) {
 
   if (userId === undefined) throw new Error("unauthorized");
 
-  console.log("userId", userId);
-
   const [userAccount] = await db
     .select()
     .from(account)
@@ -35,7 +33,6 @@ export async function adminOnly() {
   const session = await getSession();
 
   if (!session) {
-    console.log("no session");
     return redirect("/");
   }
 
