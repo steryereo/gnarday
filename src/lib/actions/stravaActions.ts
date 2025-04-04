@@ -39,7 +39,7 @@ export async function getData() {
   const token = await getUpToDateAccessToken(account);
 
   if (!token) {
-    return redirect("/");
+    return redirect("/login");
   }
 
   const activities = await getActivities(token);
