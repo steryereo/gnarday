@@ -58,8 +58,6 @@ export const auth = betterAuth({
             };
           },
           mapProfileToUser: (profile) => {
-            console.log("PROFILE", profile);
-
             return {
               ...profile,
               name: [profile.firstname, profile.lastname].join(" "),
