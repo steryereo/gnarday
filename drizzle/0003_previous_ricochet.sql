@@ -1,0 +1,1 @@
+ALTER TABLE "gnar"."lines" ALTER COLUMN "area_id" DROP NOT NULL;
