@@ -18,9 +18,14 @@ export default async function AdminPage() {
         <CardTitle>Admin</CardTitle>
       </CardHeader>
       <CardContent>
-        <Button asChild>
-          <Link href="/admin/zones">Zones</Link>
-        </Button>
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <Button asChild>
+            <Link href="/admin/zones">Zones</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/admin/areas">Areas</Link>
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
