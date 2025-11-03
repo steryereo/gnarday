@@ -5,11 +5,6 @@ import CounterText from "@/src/components/CounterText";
 import Preferences from "@/src/components/Preferences";
 import UserImage from "@/src/components/UserImage";
 
-export const metadata = {
-  title: "GnarDay",
-  description: "How many days?",
-};
-
 export default function Home() {
   return (
     <main className="flex flex-col flex-1 items-center text-center">
