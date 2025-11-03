@@ -35,7 +35,6 @@ export const areas = gnarSchema.table("areas", {
 export const lines = gnarSchema.table("lines", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   areaId: integer("area_id")
-    .notNull()
     .references(() => areas.id),
   difficultyHigh: numeric("difficulty_high"),
   difficultyLow: numeric("difficulty_low"),
