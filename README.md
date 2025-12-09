@@ -1,4 +1,4 @@
-# GnarDay
+# GnarZone
 
 Count the number of days you've skied this season based on Strava activities.
 
