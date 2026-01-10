@@ -1,154 +1,140 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useActionState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 
 import { Button } from "@/src/components/ui/button";
+import { Input } from "@/src/components/ui/input";
+import { Textarea } from "@/src/components/ui/textarea";
 import {
-  Form,
   FormField,
   FormItem,
   FormLabel,
   FormControl,
   FormMessage,
 } from "@/src/components/ui/form";
-import {
-  InsertZone,
-  insertZoneSchema,
-  SelectZone,
-} from "@/src/lib/zod-schemas/gnar";
-import { Input } from "@/src/components/ui/input";
-import { Textarea } from "@/src/components/ui/textarea";
-import { createZone, updateZone } from "@/src/lib/actions/zoneActions";
+import { SelectZone } from "@/src/lib/zod-schemas/gnar";
+import { submitZoneForm } from "@/src/lib/actions/zoneActions";
+
 type ZoneFormProps = {
   zone?: SelectZone;
 };
 
 export function ZoneForm({ zone }: ZoneFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const [state, formAction, isPending] = useActionState(submitZoneForm, null);
 
-  const defaultValues: InsertZone = {
-    name: zone?.name ?? "",
-    description: zone?.description ?? "",
-    directions: zone?.directions ?? "",
-    squallywoodPage: zone?.squallywoodPage,
-  };
-
-  const form = useForm<InsertZone>({
-    resolver: zodResolver(insertZoneSchema),
-    defaultValues,
-  });
-
-  async function submitForm(data: InsertZone) {
-    setIsSubmitting(true);
-
-    try {
-      if (zone?.id) {
-        await updateZone(data, zone.id);
-      } else {
-        await createZone(data);
-      }
-
+  useEffect(() => {
+    if (state?.success) {
       router.push("/admin/zones");
-    } catch {
-      setIsSubmitting(false);
-      form.setError("root", {
-        message: "Something went wrong. Please try again.",
-      });
     }
-  }
+    // Only depend on state to avoid unnecessary re-runs when router object changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state]);
 
   return (
     <div className="flex flex-col gap-4 items-center">
       <h2 className="text-2xl font-bold">
         {zone?.id ? "Edit Zone" : "New Zone"}
       </h2>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(submitForm)}
-          className="w-full max-w-lg flex flex-col gap-6"
+      <form
+        action={formAction}
+        className="w-full max-w-lg flex flex-col gap-6"
+      >
+        {zone?.id && <input type="hidden" name="zoneId" value={zone.id} />}
+
+        <FormField
+          name="name"
+          error={state && !state.success ? state.fieldErrors?.name : undefined}
         >
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input {...field} value={field.value ?? ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <FormItem>
+            <FormLabel>Name</FormLabel>
+            <FormControl>
+              <Input
+                name="name"
+                defaultValue={zone?.name ?? ""}
+                required
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Textarea {...field} value={field.value ?? ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <FormField
+          name="description"
+          error={
+            state && !state.success ? state.fieldErrors?.description : undefined
+          }
+        >
+          <FormItem>
+            <FormLabel>Description</FormLabel>
+            <FormControl>
+              <Textarea
+                name="description"
+                defaultValue={zone?.description ?? ""}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
-          <FormField
-            control={form.control}
-            name="directions"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Directions</FormLabel>
-                <FormControl>
-                  <Textarea {...field} value={field.value ?? ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <FormField
+          name="directions"
+          error={
+            state && !state.success ? state.fieldErrors?.directions : undefined
+          }
+        >
+          <FormItem>
+            <FormLabel>Directions</FormLabel>
+            <FormControl>
+              <Textarea
+                name="directions"
+                defaultValue={zone?.directions ?? ""}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
-          <FormField
-            control={form.control}
-            name="squallywoodPage"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Squallywood Page</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    value={field.value ?? ""}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
+        <FormField
+          name="squallywoodPage"
+          error={
+            state && !state.success
+              ? state.fieldErrors?.squallywoodPage
+              : undefined
+          }
+        >
+          <FormItem>
+            <FormLabel>Squallywood Page</FormLabel>
+            <FormControl>
+              <Input
+                type="number"
+                name="squallywoodPage"
+                defaultValue={zone?.squallywoodPage ?? ""}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
 
-                      if (isNaN(value)) {
-                        field.onChange(null);
-                      } else {
-                        field.onChange(value);
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button className="mt-4" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 /> : "Save Zone"}
-          </Button>
-          {form.formState.errors.root && (
-            <FormMessage>{form.formState.errors.root.message}</FormMessage>
+        <Button className="mt-4" type="submit" disabled={isPending}>
+          {isPending ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            "Save Zone"
           )}
-        </form>
-      </Form>
+        </Button>
+
+        {state && !state.success && !state.fieldErrors && (
+          <p className="text-[0.8rem] font-medium text-destructive">
+            {state.error}
+          </p>
+        )}
+      </form>
     </div>
   );
 }

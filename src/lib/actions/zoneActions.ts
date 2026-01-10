@@ -6,7 +6,9 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/src/db";
 import { zones } from "@/src/db/schema";
 
-import { InsertZone } from "../zod-schemas/gnar";
+import { z } from "zod";
+
+import { InsertZone, insertZoneSchema } from "../zod-schemas/gnar";
 
 export async function getZones() {
   const allZones = await db
@@ -64,4 +66,55 @@ export async function updateZone(data: InsertZone, id: number) {
   revalidatePath(`/admin/zones/${id}`);
 
   return updatedZone;
+}
+
+type ZoneFormState =
+  | { success: true }
+  | { success: false; error: string; fieldErrors?: Record<string, string> };
+
+export async function submitZoneForm(
+  _previousState: ZoneFormState | null,
+  formData: FormData,
+): Promise<ZoneFormState> {
+  try {
+    const zoneId = formData.get("zoneId");
+    const squallywoodPageValue = formData.get("squallywoodPage");
+    const data = {
+      name: formData.get("name") as string,
+      description: formData.get("description") as string,
+      directions: formData.get("directions") as string,
+      squallywoodPage:
+        squallywoodPageValue && squallywoodPageValue !== ""
+          ? parseInt(squallywoodPageValue as string)
+          : null,
+    };
+
+    const validatedData = insertZoneSchema.parse(data);
+
+    if (zoneId) {
+      await updateZone(validatedData, parseInt(zoneId as string));
+    } else {
+      await createZone(validatedData);
+    }
+    return { success: true };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const fieldErrors: Record<string, string> = {};
+      error.errors.forEach((err) => {
+        if (err.path[0]) {
+          fieldErrors[err.path[0].toString()] = err.message;
+        }
+      });
+
+      return {
+        success: false,
+        error: error.errors.map((e) => e.message).join(", "),
+        fieldErrors: Object.keys(fieldErrors).length > 0 ? fieldErrors : undefined,
+      };
+    }
+    return {
+      success: false,
+      error: "Something went wrong. Please try again.",
+    };
+  }
 }
