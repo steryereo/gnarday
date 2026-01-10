@@ -14,6 +14,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/src/components/ui/form";
+import { Alert, AlertDescription } from "@/src/components/ui/alert";
 import { SelectZone } from "@/src/lib/zod-schemas/gnar";
 import { submitZoneForm } from "@/src/lib/actions/zoneActions";
 
@@ -118,6 +119,12 @@ export function ZoneForm({ zone }: ZoneFormProps) {
           </FormItem>
         </FormField>
 
+        {state && !state.success && !state.fieldErrors && (
+          <Alert variant="destructive">
+            <AlertDescription>{state.error}</AlertDescription>
+          </Alert>
+        )}
+
         <Button className="mt-4" type="submit" disabled={isPending}>
           {isPending ? (
             <>
@@ -128,12 +135,6 @@ export function ZoneForm({ zone }: ZoneFormProps) {
             "Save Zone"
           )}
         </Button>
-
-        {state && !state.success && !state.fieldErrors && (
-          <p className="text-[0.8rem] font-medium text-destructive">
-            {state.error}
-          </p>
-        )}
       </form>
     </div>
   );
