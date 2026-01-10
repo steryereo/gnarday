@@ -4,7 +4,7 @@ import { libreFranklin } from "../lib/fonts";
 
 import "./globals.css";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "GnarZone",
   description: "How many days?",
 };

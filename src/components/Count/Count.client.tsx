@@ -28,6 +28,7 @@ export default function ClientCount({ count }: { count: number }) {
   useEffect(() => {
     let displayCount = 0;
     const delays = computeDelays(count);
+    let timeoutId: NodeJS.Timeout | null = null;
 
     function tick() {
       if (displayCount === count) return;
@@ -41,12 +42,18 @@ export default function ClientCount({ count }: { count: number }) {
         countRef.current.textContent = displayCount.toString();
       }
 
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         requestAnimationFrame(tick);
       }, delay);
     }
 
     tick();
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [count]);
 
   return (

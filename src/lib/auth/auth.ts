@@ -4,6 +4,7 @@ import { genericOAuth, admin } from "better-auth/plugins";
 
 import * as schema from "@/src/db/schema";
 
+import { env } from "@/src/lib/env";
 import { ac, admin as adminRole, user } from "./permissions";
 import { db } from "../../db";
 
@@ -35,8 +36,8 @@ export const auth = betterAuth({
           providerId: "strava",
           authorizationUrl: "https://www.strava.com/oauth/authorize",
           tokenUrl: "https://www.strava.com/oauth/token",
-          clientId: process.env.AUTH_STRAVA_ID!,
-          clientSecret: process.env.AUTH_STRAVA_SECRET!,
+          clientId: env.AUTH_STRAVA_ID,
+          clientSecret: env.AUTH_STRAVA_SECRET,
           scopes: ["activity:read_all"],
           getUserInfo: async (tokens) => {
             const response = await fetch(

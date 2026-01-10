@@ -35,9 +35,12 @@ export function formatResults(results: SummaryActivity[]): FormattedResults {
   return {
     activityCount: activities.length,
     dayCount: getUniqueDayCount(activities),
-    dateRange: [
-      activities[0]?.start_date_local,
-      activities[activities.length - 1]?.start_date_local,
-    ],
+    dateRange:
+      activities.length > 0
+        ? [
+            activities[0].start_date_local,
+            activities[activities.length - 1].start_date_local,
+          ]
+        : [],
   };
 }
