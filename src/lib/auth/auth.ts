@@ -44,6 +44,7 @@ export const auth = betterAuth({
               "https://www.strava.com/api/v3/athlete",
               {
                 method: "GET",
+                cache: "no-store", // User info is dynamic
                 headers: {
                   Authorization: `Bearer ${tokens.accessToken}`,
                 },
