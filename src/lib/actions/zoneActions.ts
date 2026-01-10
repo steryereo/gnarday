@@ -68,6 +68,12 @@ export async function updateZone(data: InsertZone, id: number) {
   return updatedZone;
 }
 
+export async function deleteZone(id: number) {
+  await db.delete(zones).where(eq(zones.id, id));
+
+  revalidatePath("/admin/zones");
+}
+
 type ZoneFormState =
   | { success: true }
   | { success: false; error: string; fieldErrors?: Record<string, string> };

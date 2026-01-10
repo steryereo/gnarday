@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/src/components/ui/table";
 import { Button } from "@/src/components/ui/button";
+import DeleteZoneButton from "@/src/components/DeleteZoneButton";
 
 export default async function ZonePage() {
   await adminOnly();
@@ -58,12 +59,18 @@ export default async function ZonePage() {
                     {zone.squallywoodPage}
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button asChild>
-                      <Link href={`/admin/zones/${zone.id}`}>
-                        <Edit className="mr-2 h-4 w-4" />
-                        Edit
-                      </Link>
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button asChild>
+                        <Link href={`/admin/zones/${zone.id}`}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Edit
+                        </Link>
+                      </Button>
+                      <DeleteZoneButton
+                        zoneId={zone.id}
+                        zoneName={zone.name || "Untitled Zone"}
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
