@@ -586,6 +586,63 @@ export default function ClientComponent({ data }: { data: DataType }) {
 
 ## Development Workflow
 
+### Git & Version Control
+
+#### Commit Messages
+- Always use conventional commits following the [Conventional Commits Specification](https://www.conventionalcommits.org/)
+- Format: `<type>(<scope>): <subject>` where:
+  - `type` is required and must be one of:
+    - `feat`: A new feature
+    - `fix`: A bug fix
+    - `docs`: Documentation only changes
+    - `style`: Changes that do not affect code meaning (formatting, missing semicolons, etc.)
+    - `refactor`: Code change that neither fixes a bug nor adds a feature
+    - `perf`: A code change that improves performance
+    - `test`: Adding or updating tests
+    - `build`: Changes to build system or external dependencies
+    - `ci`: Changes to CI configuration files and scripts
+    - `chore`: Other changes that don't modify src or test files
+  - `scope` is optional and indicates the area of the codebase affected
+  - `subject` is required and should be:
+    - Written in imperative mood ("add feature" not "added feature" or "adds feature")
+    - Lowercase (except for proper nouns)
+    - No period at the end
+    - Maximum 72 characters
+- Use the body to explain what and why (separated by blank line from subject)
+- Use the footer for breaking changes: `BREAKING CHANGE: <description>`
+- Examples:
+  - `feat(auth): add OAuth2 login support`
+  - `fix(api): handle null response in Strava data formatter`
+  - `docs(readme): update installation instructions`
+  - `refactor(components): extract form validation logic`
+
+#### Commit Best Practices
+- Commit related changes together (one logical change per commit)
+- Commit frequently with small, incremental changes
+- Test code before committing (ensure tests pass)
+- Only commit complete, functional code (use `git stash` for work in progress)
+- Write descriptive commit messages that explain what and why
+- Keep commits focused on a single concern
+
+#### Branch Management
+- Use descriptive branch names following patterns:
+  - `feat/feature-name` for new features
+  - `fix/bug-description` for bug fixes
+  - `refactor/component-name` for refactoring
+  - `docs/topic` for documentation updates
+- Keep the main branch stable and deployable
+- Delete merged branches after they're merged
+- Use branches to isolate development work
+
+#### Pull Requests
+- Write clear, descriptive PR titles and descriptions
+- Reference related issues in PR description (e.g., "Fixes #123")
+- Keep PRs focused and reasonably sized (easier to review)
+- Ensure all tests pass and CI checks succeed before requesting review
+- Avoid using emoji for bulleted lists in markdown, including README files and PR descriptions
+- Avoid using self-aggrandizing language or unfounded claims
+- Use PR templates if available to ensure consistency
+
 ### Database Migrations
 - Edit schema files in `src/db/schema/`
 - Run `pnpm drizzle-kit generate` to create migration files
