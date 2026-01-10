@@ -1,6 +1,8 @@
 import { ACTIVITIES_URL, START_DATE, TOKEN_URL } from "./constants";
 import { SummaryActivity } from "./types";
 
+import { env } from "@/src/lib/env";
+
 // TODO: use date-fns instead?
 function toEpochSeconds(dateString: string) {
   const millisecondEpoch = new Date(dateString).valueOf();
@@ -10,8 +12,8 @@ function toEpochSeconds(dateString: string) {
 
 export async function refreshAccessToken(refresh_token: string) {
   const body = JSON.stringify({
-    client_id: process.env.AUTH_STRAVA_ID,
-    client_secret: process.env.AUTH_STRAVA_SECRET,
+    client_id: env.AUTH_STRAVA_ID,
+    client_secret: env.AUTH_STRAVA_SECRET,
     refresh_token,
     grant_type: "refresh_token",
   });
@@ -24,6 +26,12 @@ export async function refreshAccessToken(refresh_token: string) {
     },
     body,
   });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to refresh access token: ${response.status} ${response.statusText}`
+    );
+  }
 
   return response.json();
 }

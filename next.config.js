@@ -5,7 +5,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "*", // TODO: make this less permissive
+        hostname: "*.cloudfront.net", // Strava profile images
       },
     ],
   },
