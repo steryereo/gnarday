@@ -1,0 +1,478 @@
+# Cursor Rules for GnarZone
+
+## Core Values
+- **Readability**: Code should be self-documenting with clear naming and structure
+- **Conciseness**: Prefer simple, direct solutions over complex abstractions
+- **Security**: Always validate inputs, check permissions, and protect sensitive data
+- **User Experience**: Prioritize accessibility, performance, and intuitive interfaces
+- **Performance**: Optimize for speed, minimize bundle size, and leverage Next.js features
+
+## Technology Stack
+- Next.js 16 (App Router) with Turbopack
+- React 19
+- TypeScript (strict mode)
+- Drizzle ORM with PostgreSQL
+- Better Auth (with admin plugin)
+- Tailwind CSS
+- Radix UI
+- React Hook Form + Zod
+- Drizzle-Zod for schema validation
+- Vitest
+- pnpm
+
+## Code Style
+
+### TypeScript
+- Use strict TypeScript with explicit types
+- Prefer `type` over `interface` unless extending/implementing
+- Use `async/await` over promise chains
+- Leverage type inference where it improves readability
+- Use `const` assertions for literal types
+- Prefer union types over enums when possible
+- Use `z.infer<>` for Zod schema types
+- Leverage Drizzle-Zod's `createInsertSchema` and `createSelectSchema`
+
+### React & Next.js
+- Use Server Components by default; only add `"use client"` when necessary
+- Server Components are async by default - use `async` for data fetching
+- Prefer Server Actions over API routes for mutations
+- Leverage Next.js Image component for all images (required for optimization)
+- Use proper Next.js metadata API with type-safe `Metadata` type
+- Prefer `redirect()` and `notFound()` over throwing errors when appropriate
+- Use Suspense boundaries for loading states with meaningful fallbacks
+- Keep client components small and focused
+- Pass data from Server Components to Client Components as props
+- Use Route Handlers (`app/api/`) only when Server Actions aren't sufficient (see Server Action Best Practices for details)
+
+### Component Patterns
+- Extract reusable logic into custom hooks
+- Use composition over configuration
+- Keep components focused on a single responsibility
+- Prefer function declarations for components
+- Use descriptive prop names and destructure when appropriate
+- Add proper TypeScript types for all props
+- Use `React.forwardRef` for components that need refs
+- Use CVA (class-variance-authority) for component variants
+
+### File Organization
+- Follow Next.js App Router conventions (`app/` directory)
+- Group related files in feature directories
+- Use index files for clean exports when appropriate
+- Keep components co-located with their usage when appropriate
+- Separate server actions into dedicated files in `lib/actions/`
+- Separate Zod schemas into `lib/zod-schemas/`
+- Use `.server.tsx` and `.client.tsx` suffixes for clarity when needed
+
+### Import Order
+1. External packages (grouped logically)
+2. Internal modules with `@/` alias (with newlines between groups)
+3. Relative imports
+
+Example:
+```typescript
+import { eq, and } from "drizzle-orm";
+import { headers } from "next/headers";
+
+import { db } from "@/src/db";
+import { account } from "@/src/db/schema";
+import { auth } from "@/src/lib/auth/auth";
+```
+
+## Security Best Practices
+
+### Authentication & Authorization
+- Always check session before accessing user data using `auth.api.getSession()`
+- Use `adminOnly()` helper function for protected admin routes
+- Call `adminOnly()` at the top of async Server Components for protected pages
+- Validate user permissions server-side, never trust client-side checks
+- Use Better Auth's built-in permission system with `auth.api.userHasPermission()`
+- Redirect unauthorized users using `redirect()` from `next/navigation`
+- Never expose session data or tokens to client components
+
+### Data Validation
+- Validate all inputs with Zod schemas
+- Use Drizzle-Zod's `createInsertSchema` and `createSelectSchema` for type-safe schemas
+- Export both insert and select types: `InsertType` and `SelectType`
+- Never trust client-side data; always validate on the server
+- Use Zod resolvers with React Hook Form for form validation
+- Validate server action inputs before processing
+- Use parameterized queries (Drizzle handles this automatically)
+
+### API Security
+- Never expose sensitive data in client components
+- Keep API keys and secrets in environment variables (`.env.local`)
+- Use Next.js environment variable conventions (`NEXT_PUBLIC_` for client, no prefix for server)
+- Use non-null assertions (`!`) for required environment variables: `process.env.VAR_NAME!`
+- Restrict image remote patterns to known domains in `next.config.js`
+- Implement rate limiting for public endpoints
+- Use Better Auth's cookie-based session management (not localStorage)
+- Handle API errors gracefully with proper error messages
+- Check response status with `response.ok` before processing API responses
+
+## Performance Optimization
+
+### Next.js Performance
+- Use Server Components to reduce client bundle size (default behavior)
+- Leverage static generation when possible with `generateStaticParams`
+- Use dynamic imports with `next/dynamic` for heavy client components and code splitting
+- Optimize images with Next.js Image component (required for all images)
+- Use Turbopack for faster development builds (`--turbopack` flag)
+- Use `fetch` with caching options:
+  - `{ cache: 'force-cache' }` for static data (default)
+  - `{ cache: 'no-store' }` for dynamic data
+  - `{ next: { revalidate: seconds } }` for ISR (Incremental Static Regeneration)
+  - `{ next: { tags: ['tag'] } }` for on-demand revalidation
+- Leverage Next.js built-in request deduplication (automatic)
+- Use `unstable_cache` for custom caching when `fetch` caching isn't sufficient
+- Implement Incremental Static Regeneration (ISR) with `revalidate` option
+- Use `generateStaticParams` for dynamic routes with static generation
+- Use `revalidatePath()` or `revalidateTag()` after mutations to update cached data (see Server Action Best Practices)
+
+### Database Queries
+- Use Drizzle's query builder efficiently
+- Select only needed columns, avoid `SELECT *`
+- Use proper indexes (defined in schema)
+- Batch related queries when possible
+- Use transactions for multi-step operations
+- Use `.returning()` for insert/update operations when you need the result
+- Destructure array results: `const [item] = await db.select()...`
+
+### React Performance
+- Memoize expensive computations with `useMemo` only when needed (measure first)
+- Use `useCallback` for stable function references passed to memoized children
+- Avoid unnecessary re-renders by keeping state local
+- Keep component trees shallow when possible
+- Prefer Server Components for data fetching to avoid client-side waterfalls
+- Use `use()` hook with Suspense for data fetching in client components only when Server Components can't be used (see React 19 New Hooks)
+- Use `useOptimistic` for instant UI feedback during async operations (see React 19 New Hooks)
+- Use `useTransition` to mark non-urgent updates and keep UI responsive
+- Leverage React 19's automatic batching for state updates
+
+### Bundle Size
+- Import only what you need (tree-shakeable imports)
+- Use dynamic imports with `next/dynamic` for code splitting (see Next.js Performance)
+- Avoid large dependencies when smaller alternatives exist
+- Monitor bundle size with Next.js build output
+- Use Server Components to keep JavaScript out of the client bundle (default behavior)
+
+## User Experience
+
+### Accessibility
+- Use semantic HTML elements
+- Include proper ARIA labels when needed
+- Use Radix UI components for accessible primitives
+- Ensure keyboard navigation works
+- Test with screen readers
+- Use `VisuallyHidden` for screen-reader-only text
+- Maintain proper heading hierarchy
+
+### UI/UX Patterns
+- Provide loading states for async operations
+- Show error messages clearly and helpfully
+- Use optimistic updates when appropriate
+- Implement proper form validation feedback
+- Ensure responsive design with Tailwind
+- Use consistent spacing and typography
+
+### Error Handling
+- Handle errors gracefully with user-friendly messages
+- Log errors server-side for debugging
+- Use error boundaries for React error handling
+- Provide fallback UI for failed states
+- Never expose internal error details to users
+
+## Code Quality
+
+### Testing
+- Write tests for critical business logic
+- Test server actions and data transformations
+- Use Vitest for unit and integration tests
+- Test accessibility with testing-library
+- Keep tests focused and maintainable
+
+### Code Organization
+- Keep functions small and focused
+- Extract complex logic into helper functions
+- Use descriptive variable and function names
+- Avoid deep nesting (max 3-4 levels)
+- Group related code together
+
+### Comments & Documentation
+- Write self-documenting code over comments
+- Add comments only for "why", not "what"
+- Document complex algorithms or business logic
+- Keep JSDoc comments for public APIs
+- Remove commented-out code
+
+## Database Patterns
+
+### Drizzle ORM
+- Use Drizzle's type-safe query builder
+- Define schemas with `pgSchema()` for PostgreSQL
+- Use `generatedAlwaysAsIdentity()` for auto-incrementing primary keys
+- Use `timestamps` helper from `db/helpers.ts` for `createdAt` and `updatedAt` fields
+- Use relations for complex queries when needed
+- Leverage Drizzle's migration system with `drizzle-kit`
+- Keep migrations focused and reversible
+- Use `pgSchema` to namespace tables
+- For Supabase: use `prepare: false` in postgres client configuration
+- Use `dotenv` in `drizzle.config.ts` to load `.env.local` for migrations
+
+### Query Patterns
+- Use transactions for related operations
+- Prefer explicit joins over N+1 queries
+- Use `eq()`, `and()`, `or()`, `asc()`, `desc()` for readable queries
+- Select specific columns, not entire tables
+- Use prepared statements (Drizzle default)
+- Use `.returning()` to get inserted/updated data
+- Destructure array results: `const [item] = await db.select()...`
+- Use `.orderBy()` for sorting results
+
+### Database Helpers
+- Create reusable helpers in `db/helpers.ts` for common patterns
+- Use `timestamps` helper from `db/helpers.ts` for consistent `createdAt` and `updatedAt` fields
+- Use `timestamp()` with `mode: "string"` for string-based timestamps
+- Use `.defaultNow()` and `.$onUpdate(() => sql\`now()\`)` for automatic timestamps
+
+## Styling
+
+### Tailwind CSS
+- Use utility classes for styling
+- Extract repeated patterns into components
+- Use Tailwind's design tokens consistently
+- Prefer composition over custom CSS
+- Use `cn()` utility from `@/src/lib/utils` for conditional classes
+- Leverage Tailwind's responsive utilities
+- Use custom colors defined in `tailwind.config.ts`
+- Use `class-variance-authority` (CVA) for component variants
+
+### Component Styling
+- Use Radix UI for complex, accessible components
+- Style with Tailwind, not inline styles
+- Keep styling co-located with components
+- Use CSS variables for theme values (HSL format in `globals.css`)
+- Define custom colors in `tailwind.config.ts` and reference via CSS variables
+- Use `@layer base` in `globals.css` for base styles
+- Support dark mode with `.dark` class selector in CSS variables
+- Use Radix UI's `Slot` component with `asChild` prop for composition
+- Use `VisuallyHidden` from Radix for screen-reader-only content
+- Use `aria-hidden` on decorative elements that have screen-reader alternatives
+- Follow shadcn/ui patterns for component structure
+
+## Common Patterns
+
+### Server Actions
+```typescript
+"use server";
+
+import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
+import { revalidatePath, revalidateTag } from "next/cache";
+
+import { db } from "@/src/db";
+import { zones } from "@/src/db/schema";
+import { InsertZone } from "@/src/lib/zod-schemas/gnar";
+
+export async function createZone(data: InsertZone) {
+  // Validate input (Zod schemas are validated automatically in Server Actions)
+  const [newZone] = await db
+    .insert(zones)
+    .values(data)
+    .returning({ insertedId: zones.id });
+
+  // Revalidate relevant paths after mutation
+  revalidatePath("/admin/zones");
+  // Or use tags for more granular control
+  revalidateTag("zones");
+
+  return newZone;
+}
+```
+
+### Server Action Best Practices
+- Always validate inputs with Zod schemas (automatic in Server Actions)
+- Use `revalidatePath(path)` to revalidate specific routes after mutations
+- Use `revalidateTag(tag)` for tag-based cache invalidation (set tags in `fetch` with `{ next: { tags: ['tag'] } }`)
+- Return serializable data (no functions, Date objects should be strings)
+- Handle errors gracefully and return error objects instead of throwing
+- Use `headers()` from `next/headers` for authentication checks
+- Keep Server Actions focused on a single responsibility
+- Prefer Server Actions over Route Handlers (`app/api/`) for mutations
+- Use Route Handlers only for:
+  - Webhooks (third-party callbacks)
+  - Public API endpoints
+  - Streaming responses
+  - When you need specific HTTP methods (PUT, DELETE, etc.) with custom logic
+
+### Server Components
+```typescript
+import { Suspense } from "react";
+
+import { getData } from "@/src/lib/actions/stravaActions";
+import ClientComponent from "./ClientComponent";
+
+export default async function ServerComponent() {
+  const data = await getData();
+
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ClientComponent data={data} />
+    </Suspense>
+  );
+}
+```
+
+### Client Components
+```typescript
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+export default function ClientComponent({ data }: { data: DataType }) {
+  const router = useRouter();
+  const ref = useRef<HTMLElement>(null);
+  
+  useEffect(() => {
+    // Side effects
+  }, []);
+  
+  // Component logic
+}
+```
+
+### Client Component Patterns
+- Use `useRef` for DOM manipulation when needed (e.g., animations, direct text updates)
+- Use `useEffect` for side effects, not for data fetching
+- Prefer direct DOM manipulation with refs over state when performance matters
+- Use `requestAnimationFrame` for smooth animations
+- Clean up timers and subscriptions in `useEffect` cleanup functions
+
+### Form Handling
+- Use React Hook Form with Zod resolver (`@hookform/resolvers/zod`)
+- Use `useForm` hook with `zodResolver` for type-safe validation
+- Validate on both client and server (never trust client-side validation alone)
+- Use Server Actions for form submissions (preferred over API routes)
+- Use `useActionState` for managing form state with Server Actions (see React 19 New Hooks)
+- Use `useOptimistic` for optimistic UI updates during form submissions (see React 19 New Hooks)
+- Provide clear error messages using `FormMessage` component
+- Use proper form semantics with Radix UI Form components
+- Handle loading states with `isSubmitting` or `useActionState` pending state
+- Use `router.push()` or `router.refresh()` for navigation after successful submission
+- Set form errors with `form.setError("root", { message: "..." })`
+- Use `defaultValues` for form initialization
+- Use `formState.errors` for displaying field-level errors
+
+### Better Auth Patterns
+- Use `auth.api.getSession({ headers: await headers() })` for session checks
+- Use `auth.api.userHasPermission()` for permission checks
+- Use `signIn.oauth2()` from auth client for OAuth flows
+- Configure OAuth providers with `genericOAuth` plugin
+- Use `admin` plugin with access control (AC) for role-based permissions
+- Store auth configuration in `lib/auth/auth.ts`
+- Export auth client from `lib/auth/auth-client.ts` for client-side usage
+- Use `drizzleAdapter` with Better Auth for database integration
+- Configure session cookie cache for performance
+
+### Constants & Configuration
+- Organize constants in dedicated files (e.g., `lib/strava/constants.ts`)
+- Use `as const` for readonly arrays and literal types
+- Export constants as named exports
+- Group related constants together
+- Use descriptive constant names in UPPER_SNAKE_CASE
+
+## Anti-Patterns to Avoid
+
+- ❌ Don't use `any` type (use `unknown` if needed)
+- ❌ Don't mix server and client code in same file
+- ❌ Don't expose sensitive data in client components
+- ❌ Don't skip permission checks (always use `adminOnly()` or session checks)
+- ❌ Don't use `console.log` in production code
+- ❌ Don't create unnecessary abstractions
+- ❌ Don't ignore TypeScript errors
+- ❌ Don't use `eval()` or `dangerouslySetInnerHTML` without sanitization
+- ❌ Don't commit secrets or API keys
+- ❌ Don't use `SELECT *` in database queries
+- ❌ Don't fetch data in client components when Server Components can do it
+- ❌ Don't use `useEffect` for data fetching (use Server Components or Server Actions)
+- ❌ Don't forget to handle loading and error states
+- ❌ Don't forget to call `revalidatePath()` or `revalidateTag()` after mutations (see Server Action Best Practices)
+- ❌ Don't return non-serializable data from Server Actions (no functions, Date objects)
+- ❌ Don't use API routes when Server Actions can handle the use case (see Server Action Best Practices)
+- ❌ Don't forget to use `useActionState` for form state management with Server Actions (see React 19 New Hooks)
+- ❌ Don't use inline styles when Tailwind classes work
+- ❌ Don't skip form validation on the server
+- ❌ Don't forget to handle API errors and check `response.ok`
+- ❌ Don't forget to clean up timers/subscriptions in `useEffect`
+- ❌ Don't commit `.env.local` or other environment files
+- ❌ Don't use `prepare: true` with Supabase (use `prepare: false`)
+
+## React 19 Specific Patterns
+
+### Server Components
+- Server Components are async by default - use `async` for data fetching
+- Fetch data directly in Server Components using `await`
+- Pass serializable data to Client Components as props
+- Use Suspense boundaries for loading states
+- Use `unstable_cache` for custom caching when `fetch` caching isn't sufficient
+
+### Client Components
+- Use `"use client"` directive at the top of the file
+- Use React 19 hooks: `useState`, `useEffect`, `useCallback`, `useMemo`
+- Use `useActionState` for managing async form state with Server Actions (see React 19 New Hooks)
+- Use `useOptimistic` for optimistic UI updates during async operations (see React 19 New Hooks)
+- Use `useTransition` for marking non-urgent updates and keeping UI responsive
+- Use `useRouter` from `next/navigation` for client-side navigation
+- Use `useForm` from React Hook Form for form state management
+- Use `useRef` for DOM references and imperative handles
+- Use `useId()` for generating unique IDs (e.g., in form components)
+- Use `use()` hook with Suspense for data fetching in client components (only when Server Components can't be used)
+- Leverage React 19's concurrent rendering features for better UX
+
+### React 19 New Hooks
+- **`useActionState`**: Manages form state and handles Server Action submissions
+  ```typescript
+  const [state, formAction, isPending] = useActionState(serverAction, initialState);
+  ```
+- **`useOptimistic`**: Provides immediate UI feedback before server confirmation
+  ```typescript
+  const [optimisticState, addOptimistic] = useOptimistic(state, updateFn);
+  ```
+- **`use()`**: Fetches data in client components with Suspense support
+  ```typescript
+  const data = use(promise);
+  ```
+
+### Data Flow
+- Server Components fetch data → pass to Client Components as props
+- Client Components handle interactivity → call Server Actions
+- Server Actions process data → return results → revalidate paths/tags (see Server Action Best Practices)
+- Use Suspense for async Server Components with loading fallbacks
+- Use `useActionState` for form submissions with Server Actions (see React 19 New Hooks)
+- Use `useOptimistic` for immediate UI updates before server confirmation (see React 19 New Hooks)
+- Use `useTransition` for managing loading states during navigation
+- Leverage React 19's automatic batching for better performance
+
+## Development Workflow
+
+### Database Migrations
+- Edit schema files in `src/db/schema/`
+- Run `pnpm drizzle-kit generate` to create migration files
+- Run `pnpm drizzle-kit migrate` to apply migrations locally
+- Commit migration files to version control
+- Migrations are applied automatically in production via CI/CD
+
+### Environment Variables
+- Store all secrets in `.env.local` (git-ignored)
+- Use non-null assertions for required env vars: `process.env.VAR_NAME!`
+- Document required env vars in `.env.local.example` or README
+- Use `dotenv` in config files (e.g., `drizzle.config.ts`) to load `.env.local`
+
+## When in Doubt
+
+1. **Security**: Err on the side of caution - validate, check permissions, protect data
+2. **Performance**: Measure first, optimize based on data
+3. **Readability**: If it's hard to read, refactor it
+4. **User Experience**: Think from the user's perspective
+5. **Type Safety**: Let TypeScript catch errors at compile time
+6. **Server First**: Prefer Server Components and Server Actions over client-side data fetching
