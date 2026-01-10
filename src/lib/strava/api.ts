@@ -20,6 +20,7 @@ export async function refreshAccessToken(refresh_token: string) {
 
   const response = await fetch(TOKEN_URL, {
     method: "POST",
+    cache: "no-store", // Authentication tokens must be fresh
     headers: {
       Accept: "application/json, text/plain, */*",
       "Content-Type": "application/json",
@@ -46,6 +47,7 @@ export async function getActivities(
   });
 
   const response = await fetch(`${ACTIVITIES_URL}?${params}`, {
+    cache: "no-store", // User activities are dynamic
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
