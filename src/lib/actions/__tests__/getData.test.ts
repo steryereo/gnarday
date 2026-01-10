@@ -5,13 +5,21 @@ import {
   getActivities,
   refreshAccessToken,
 } from "@/src/lib/strava";
-import { auth } from "@/src/lib/auth/auth";
 
 import { SUMMARY_ACTIVITY } from "../../strava/__fixtures__";
 import { getData } from "../stravaActions";
+import { getAccountForCurrentUser } from "../userActions";
 
-vi.mock("@/src/auth");
 vi.mock("@/src/lib/strava");
+vi.mock("../userActions");
+vi.mock("next/navigation", () => ({
+  redirect: vi.fn(() => {
+    const error = new Error("NEXT_REDIRECT");
+    // @ts-expect-error - Next.js internal property
+    error.digest = "NEXT_REDIRECT;redirect=/login";
+    throw error;
+  }),
+}));
 
 const REFRESH_TOKEN = "abc";
 const ACCESS_TOKEN = "123";
@@ -23,18 +31,49 @@ const FORMATTED_RESULTS = {
 
 describe("getData", () => {
   describe("when not logged in", () => {
-    test("throws an error", () => {
-      // @ts-expect-error https://github.com/nextauthjs/next-auth-example/blob/main/app/api/protected/route.ts#L9C11-L9C44
-      vi.mocked(auth).mockResolvedValue(null);
+    test("redirects to login", async () => {
+      vi.mocked(getAccountForCurrentUser).mockResolvedValue({
+        success: false,
+        error: "unauthorized",
+      });
 
-      expect(() => getData()).rejects.toThrowError("unauthorized");
+      await expect(getData()).rejects.toThrow("NEXT_REDIRECT");
+    });
+  });
+
+  describe("when account not found", () => {
+    test("redirects to login", async () => {
+      vi.mocked(getAccountForCurrentUser).mockResolvedValue({
+        success: false,
+        error: "account not found",
+      });
+
+      await expect(getData()).rejects.toThrow();
     });
   });
 
   describe("when logged in", () => {
+    const mockAccount = {
+      id: "account-id",
+      accountId: "strava-123",
+      providerId: "strava",
+      userId: "user-id",
+      accessToken: "old-token",
+      refreshToken: REFRESH_TOKEN,
+      idToken: null,
+      accessTokenExpiresAt: new Date(Date.now() - 1000), // Expired
+      refreshTokenExpiresAt: null,
+      scope: null,
+      password: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
     beforeEach(() => {
-      // @ts-expect-error https://github.com/nextauthjs/next-auth-example/blob/main/app/api/protected/route.ts#L9C11-L9C44
-      vi.mocked(auth).mockResolvedValue({ refresh_token: REFRESH_TOKEN });
+      vi.mocked(getAccountForCurrentUser).mockResolvedValue({
+        success: true,
+        data: mockAccount,
+      });
       vi.mocked(refreshAccessToken).mockResolvedValue({
         access_token: ACCESS_TOKEN,
       });

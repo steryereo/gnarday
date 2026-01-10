@@ -38,14 +38,15 @@ export default function DeleteZoneButton({
 
     setIsDeleting(true);
 
-    try {
-      await deleteZone(zoneId);
+    const result = await deleteZone(zoneId);
+
+    if (result.success) {
       router.refresh();
-    } catch (error) {
-      alert("Failed to delete zone. Please try again.");
-    } finally {
-      setIsDeleting(false);
+    } else {
+      alert(`Failed to delete zone: ${result.error}`);
     }
+
+    setIsDeleting(false);
   }
 
   return (

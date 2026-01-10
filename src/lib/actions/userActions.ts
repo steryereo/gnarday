@@ -14,19 +14,47 @@ async function getSession() {
   return session;
 }
 
-export async function getAccountForCurrentUser(provider: string) {
+type AccountData = {
+  id: string;
+  accountId: string;
+  providerId: string;
+  userId: string;
+  accessToken: string | null;
+  refreshToken: string | null;
+  idToken: string | null;
+  accessTokenExpiresAt: Date | null;
+  refreshTokenExpiresAt: Date | null;
+  scope: string | null;
+  password: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+type GetAccountResult =
+  | { success: true; data: AccountData }
+  | { success: false; error: string };
+
+export async function getAccountForCurrentUser(
+  provider: string,
+): Promise<GetAccountResult> {
   const session = await getSession();
 
   const userId = session?.user?.id;
 
-  if (userId === undefined) throw new Error("unauthorized");
+  if (userId === undefined) {
+    return { success: false, error: "unauthorized" };
+  }
 
   const [userAccount] = await db
     .select()
     .from(account)
     .where(and(eq(account.userId, userId), eq(account.providerId, provider)));
 
-  return userAccount;
+  if (!userAccount) {
+    return { success: false, error: "account not found" };
+  }
+
+  return { success: true, data: userAccount };
 }
 
 export async function adminOnly() {
