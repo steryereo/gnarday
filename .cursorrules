@@ -158,13 +158,131 @@ import { auth } from "@/src/lib/auth/auth";
 ## User Experience
 
 ### Accessibility
-- Use semantic HTML elements
-- Include proper ARIA labels when needed
-- Use Radix UI components for accessible primitives
-- Ensure keyboard navigation works
-- Test with screen readers
-- Use `VisuallyHidden` for screen-reader-only text
-- Maintain proper heading hierarchy
+
+#### Semantic HTML
+- Use semantic HTML elements (`<nav>`, `<main>`, `<article>`, `<section>`, `<header>`, `<footer>`, `<aside>`)
+- Prefer semantic elements over generic `<div>` and `<span>` when appropriate
+- Use proper heading hierarchy (`<h1>` through `<h6>`) without skipping levels
+- Use `<button>` for interactive actions, not styled `<div>` elements
+- Use `<a>` for navigation links, not clickable `<div>` elements
+- Use proper form elements (`<form>`, `<label>`, `<input>`, `<select>`, `<textarea>`)
+- Use `<fieldset>` and `<legend>` for grouping related form fields
+- Use list elements (`<ul>`, `<ol>`, `<li>`) for lists of items
+
+#### ARIA Attributes
+- **Prefer `VisuallyHidden` from Radix over ARIA attributes for screen-reader-only text** (more semantic and maintainable)
+- Include proper ARIA labels when semantic HTML isn't sufficient and `VisuallyHidden` isn't appropriate
+- Use `aria-label` for elements without visible text labels (only when `VisuallyHidden` can't be used)
+- Use `aria-labelledby` to reference existing visible labels
+- Use `aria-describedby` for additional descriptive text
+- Use `aria-live` regions for dynamic content updates (polite or assertive)
+- Use `aria-hidden="true"` on decorative elements that have screen-reader alternatives
+- Use `role` attributes only when semantic HTML can't express the purpose
+- Use `aria-expanded`, `aria-selected`, `aria-checked` for interactive states
+- Use `aria-required` and `aria-invalid` for form validation states
+- Use `aria-disabled` for disabled interactive elements
+- Avoid redundant ARIA (e.g., don't add `role="button"` to a `<button>`)
+
+#### Keyboard Navigation
+- Ensure all interactive elements are keyboard accessible (Tab, Enter, Space, Arrow keys)
+- Maintain logical tab order (follow visual flow)
+- Provide visible focus indicators for all focusable elements
+- Use `tabIndex={0}` sparingly (only when necessary to add focus to non-focusable elements)
+- Use `tabIndex={-1}` to remove elements from tab order but keep them programmatically focusable
+- Implement keyboard shortcuts for common actions (document with `aria-keyshortcuts`)
+- Handle Escape key to close modals, dropdowns, and dialogs
+- Support arrow key navigation in lists, menus, and grids
+- Ensure focus management in modals (trap focus, return focus on close)
+- Use `onKeyDown` handlers for keyboard interactions (not just `onClick`)
+- Skip links for main content navigation (`<a href="#main-content">Skip to main content</a>`)
+
+#### Focus Management
+- Manage focus when showing/hiding content (modals, dropdowns, tooltips)
+- Return focus to trigger element when closing modals or dialogs
+- Use `useRef` and `focus()` method for programmatic focus management
+- Use `autoFocus` sparingly and only when it improves UX
+- Ensure focus is visible (use Tailwind's `focus:` utilities)
+- Don't remove focus indicators with `outline: none` without providing alternatives
+- Use `focus-visible` for keyboard-only focus indicators
+
+#### Screen Readers
+- Test with screen readers (VoiceOver, NVDA, JAWS, TalkBack)
+- **Prefer `VisuallyHidden` from Radix for screen-reader-only text** over `aria-label` or `aria-labelledby` when possible
+- Use `VisuallyHidden` for descriptive text, labels, and instructions that should be hidden visually but available to screen readers
+- Provide alternative text for all images (`alt` attribute)
+- Use empty `alt=""` for decorative images only
+- Provide descriptive text for icons and icon-only buttons using `VisuallyHidden` when the text isn't visible
+- Announce dynamic content changes with `aria-live` regions
+- Use `aria-label` or `aria-labelledby` only when `VisuallyHidden` isn't appropriate (e.g., for very short labels on interactive elements)
+- Ensure form errors are announced to screen readers (use `VisuallyHidden` for error text when appropriate)
+- Provide loading states that are announced to screen readers
+- Use `aria-busy="true"` for loading states
+
+#### Color and Contrast
+- Ensure sufficient color contrast (WCAG AA minimum: 4.5:1 for text, 3:1 for UI components)
+- Don't rely solely on color to convey information (use icons, text, or patterns)
+- Test color combinations with color blindness simulators
+- Provide alternative indicators for status (e.g., icons, text labels)
+- Support dark mode with proper contrast in both themes
+- Use CSS custom properties for theme-aware colors
+
+#### Form Accessibility
+- Associate labels with inputs using `htmlFor`/`id` or wrap inputs in `<label>`
+- Use `VisuallyHidden` for additional form instructions or help text that should be screen-reader-only
+- Use `aria-describedby` to link error messages to form fields (when error messages are visible)
+- Use `aria-invalid="true"` for fields with validation errors
+- Use `aria-required="true"` for required fields (in addition to visual indicators)
+- Provide clear, specific error messages near the relevant field (use `VisuallyHidden` if errors should be screen-reader-only)
+- Group related fields with `<fieldset>` and `<legend>`
+- Use proper input types (`email`, `tel`, `url`, `number`, etc.)
+- Provide autocomplete hints with `autoComplete` attribute
+- Prefer `VisuallyHidden` over `aria-describedby` for help text when the text should be screen-reader-only
+
+#### Images and Media
+- Always provide `alt` text for images (descriptive for content, empty for decorative)
+- Use Next.js `Image` component which includes accessibility features
+- Provide captions or descriptions for complex images (charts, graphs, diagrams)
+- Ensure video content has captions and transcripts
+- Provide audio descriptions for video content when needed
+- Use `loading="lazy"` for images below the fold (Next.js Image handles this)
+
+#### Motion and Animations
+- Respect `prefers-reduced-motion` media query
+- Provide option to disable animations for users with motion sensitivity
+- Use CSS `@media (prefers-reduced-motion: reduce)` to disable animations
+- Keep animations subtle and purposeful
+- Don't use animations that could trigger vestibular disorders
+
+#### Testing Accessibility
+- Test with keyboard-only navigation (no mouse)
+- Test with screen readers (VoiceOver, NVDA, JAWS)
+- Use automated tools (axe DevTools, Lighthouse, WAVE)
+- Test with testing-library's accessibility queries (`getByRole`, `getByLabelText`)
+- Test color contrast with tools (WebAIM Contrast Checker)
+- Test with browser zoom (200% zoom should maintain usability)
+- Test with different viewport sizes (responsive design is part of accessibility)
+- Manual testing with actual assistive technologies
+
+#### Radix UI and Component Libraries
+- Use Radix UI components for accessible primitives (they handle ARIA, keyboard, focus)
+- Leverage Radix's built-in accessibility features
+- **Always prefer `VisuallyHidden` from Radix for screen-reader-only content** over ARIA attributes like `aria-label` or `aria-labelledby`
+- Use `VisuallyHidden` for any text that should be accessible to screen readers but hidden visually
+- Use Radix's `Slot` component with `asChild` prop for composition
+- Follow shadcn/ui patterns which are built on accessible Radix primitives
+- Don't override Radix's accessibility features without careful consideration
+
+#### Additional Best Practices
+- Provide skip links for main content navigation
+- Ensure page titles are descriptive and unique
+- Use proper document structure (`<html lang="en">`)
+- Set appropriate `lang` attributes for multilingual content
+- Ensure error messages are clear and actionable
+- Provide loading states that don't block interaction unnecessarily
+- Use `role="alert"` for important error messages
+- Use `role="status"` for non-critical status updates
+- Ensure modals and dialogs are properly announced and focusable
+- Test with real users who use assistive technologies when possible
 
 ### UI/UX Patterns
 - Provide loading states for async operations
@@ -406,6 +524,19 @@ export default function ClientComponent({ data }: { data: DataType }) {
 - ❌ Don't forget to clean up timers/subscriptions in `useEffect`
 - ❌ Don't commit `.env.local` or other environment files
 - ❌ Don't use `prepare: true` with Supabase (use `prepare: false`)
+- ❌ Don't use `<div>` or `<span>` for interactive elements (use `<button>`, `<a>`, etc.)
+- ❌ Don't remove focus indicators without providing alternatives
+- ❌ Don't rely solely on color to convey information
+- ❌ Don't skip heading levels (h1 → h3 without h2)
+- ❌ Don't forget `alt` text for images (use empty string for decorative images)
+- ❌ Don't use `tabIndex > 0` (creates confusing tab order)
+- ❌ Don't forget to test keyboard navigation
+- ❌ Don't ignore `prefers-reduced-motion` media query
+- ❌ Don't create inaccessible modals (must trap focus, handle Escape key)
+- ❌ Don't forget to associate labels with form inputs
+- ❌ Don't use generic ARIA roles when semantic HTML works
+- ❌ Don't forget to announce dynamic content changes to screen readers
+- ❌ Don't use `aria-label` or `aria-labelledby` when `VisuallyHidden` would be more appropriate (prefer `VisuallyHidden` for screen-reader-only text)
 
 ## React 19 Specific Patterns
 
