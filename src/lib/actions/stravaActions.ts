@@ -9,40 +9,61 @@ import {
 
 import { getAccountForCurrentUser } from "./userActions";
 
+type GetTokenResult =
+  | { success: true; token: string }
+  | { success: false; error: string };
+
 async function getUpToDateAccessToken(account: {
   accessToken: string | null;
   refreshToken: string | null;
   accessTokenExpiresAt: Date | null;
-}) {
+}): Promise<GetTokenResult> {
   if (
     !account.accessTokenExpiresAt ||
     !account.refreshToken ||
     !account.accessToken
   ) {
-    throw new Error("incomplete strava account");
+    return { success: false, error: "incomplete strava account" };
   }
 
   if (account.accessTokenExpiresAt < new Date()) {
-    const { access_token: accessToken } = await refreshAccessToken(
-      account.refreshToken
-    );
+    try {
+      const { access_token: accessToken } = await refreshAccessToken(
+        account.refreshToken
+      );
 
-    return accessToken;
+      return { success: true, token: accessToken };
+    } catch (error) {
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "failed to refresh token",
+      };
+    }
   }
 
-  return account.accessToken;
+  return { success: true, token: account.accessToken };
 }
 
 export async function getData() {
-  const account = await getAccountForCurrentUser("strava");
+  const accountResult = await getAccountForCurrentUser("strava");
 
-  const token = await getUpToDateAccessToken(account);
-
-  if (!token) {
-    return redirect("/login");
+  if (!accountResult.success) {
+    if (accountResult.error === "unauthorized") {
+      redirect("/login");
+    }
+    throw new Error(accountResult.error);
   }
 
-  const activities = await getActivities(token);
+  const tokenResult = await getUpToDateAccessToken(accountResult.data);
+
+  if (!tokenResult.success) {
+    if (tokenResult.error === "incomplete strava account") {
+      redirect("/login");
+    }
+    throw new Error(tokenResult.error);
+  }
+
+  const activities = await getActivities(tokenResult.token);
 
   return formatResults(activities);
 }

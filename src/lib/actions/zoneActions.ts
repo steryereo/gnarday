@@ -11,67 +11,123 @@ import { z } from "zod";
 import { InsertZone, insertZoneSchema } from "../zod-schemas/gnar";
 
 export async function getZones() {
-  const allZones = await db
-    .select({
-      id: zones.id,
-      name: zones.name,
-      description: zones.description,
-      directions: zones.directions,
-      squallywoodPage: zones.squallywoodPage,
-      createdAt: zones.createdAt,
-      updatedAt: zones.updatedAt,
-    })
-    .from(zones)
-    .orderBy(asc(zones.squallywoodPage));
+  try {
+    const allZones = await db
+      .select({
+        id: zones.id,
+        name: zones.name,
+        description: zones.description,
+        directions: zones.directions,
+        squallywoodPage: zones.squallywoodPage,
+        createdAt: zones.createdAt,
+        updatedAt: zones.updatedAt,
+      })
+      .from(zones)
+      .orderBy(asc(zones.squallywoodPage));
 
-  return allZones;
+    return allZones;
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch zones",
+    );
+  }
 }
 
 export async function getZone(id: number) {
-  const [zone] = await db
-    .select({
-      id: zones.id,
-      name: zones.name,
-      description: zones.description,
-      directions: zones.directions,
-      squallywoodPage: zones.squallywoodPage,
-      createdAt: zones.createdAt,
-      updatedAt: zones.updatedAt,
-    })
-    .from(zones)
-    .where(eq(zones.id, id));
+  try {
+    const [zone] = await db
+      .select({
+        id: zones.id,
+        name: zones.name,
+        description: zones.description,
+        directions: zones.directions,
+        squallywoodPage: zones.squallywoodPage,
+        createdAt: zones.createdAt,
+        updatedAt: zones.updatedAt,
+      })
+      .from(zones)
+      .where(eq(zones.id, id));
 
-  return zone;
+    return zone;
+  } catch (error) {
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch zone",
+    );
+  }
 }
 
-export async function createZone(data: InsertZone) {
-  const [newZone] = await db
-    .insert(zones)
-    .values(data)
-    .returning({ insertedId: zones.id });
+type CreateZoneResult =
+  | { success: true; data: { insertedId: number } }
+  | { success: false; error: string };
 
-  revalidatePath("/admin/zones");
+export async function createZone(
+  data: InsertZone,
+): Promise<CreateZoneResult> {
+  try {
+    const [newZone] = await db
+      .insert(zones)
+      .values(data)
+      .returning({ insertedId: zones.id });
 
-  return newZone;
+    revalidatePath("/admin/zones");
+
+    return { success: true, data: newZone };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to create zone",
+    };
+  }
 }
 
-export async function updateZone(data: InsertZone, id: number) {
-  const [updatedZone] = await db
-    .update(zones)
-    .set(data)
-    .where(eq(zones.id, id))
-    .returning({ updatedId: zones.id });
+type UpdateZoneResult =
+  | { success: true; data: { updatedId: number } }
+  | { success: false; error: string };
 
-  revalidatePath("/admin/zones");
-  revalidatePath(`/admin/zones/${id}`);
+export async function updateZone(
+  data: InsertZone,
+  id: number,
+): Promise<UpdateZoneResult> {
+  try {
+    const [updatedZone] = await db
+      .update(zones)
+      .set(data)
+      .where(eq(zones.id, id))
+      .returning({ updatedId: zones.id });
 
-  return updatedZone;
+    if (!updatedZone) {
+      return { success: false, error: "Zone not found" };
+    }
+
+    revalidatePath("/admin/zones");
+    revalidatePath(`/admin/zones/${id}`);
+
+    return { success: true, data: updatedZone };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to update zone",
+    };
+  }
 }
 
-export async function deleteZone(id: number) {
-  await db.delete(zones).where(eq(zones.id, id));
+type DeleteZoneResult =
+  | { success: true }
+  | { success: false; error: string };
 
-  revalidatePath("/admin/zones");
+export async function deleteZone(id: number): Promise<DeleteZoneResult> {
+  try {
+    await db.delete(zones).where(eq(zones.id, id));
+
+    revalidatePath("/admin/zones");
+
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete zone",
+    };
+  }
 }
 
 type ZoneFormState =
@@ -98,9 +154,24 @@ export async function submitZoneForm(
     const validatedData = insertZoneSchema.parse(data);
 
     if (zoneId) {
-      await updateZone(validatedData, parseInt(zoneId as string));
+      const updateResult = await updateZone(
+        validatedData,
+        parseInt(zoneId as string),
+      );
+      if (!updateResult.success) {
+        return {
+          success: false,
+          error: updateResult.error,
+        };
+      }
     } else {
-      await createZone(validatedData);
+      const createResult = await createZone(validatedData);
+      if (!createResult.success) {
+        return {
+          success: false,
+          error: createResult.error,
+        };
+      }
     }
     return { success: true };
   } catch (error) {
