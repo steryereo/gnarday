@@ -51,7 +51,18 @@ export const auth = betterAuth({
               }
             );
 
-            const profile = await response.json();
+            
+            const profile = await response.json().catch(() => null);
+
+            if (!response.ok || typeof profile?.id !== "number") {
+              // TODO(#84): replace with Sentry.captureMessage once Sentry is set up.
+              // https://github.com/steryereo/gnarday/issues/84
+              console.error("[strava] /athlete request failed during sign-in", {
+                status: response.status,
+                errors: JSON.stringify(profile?.errors ?? profile),
+              });
+              return null;
+            }
 
             return {
               ...profile,
@@ -62,8 +73,11 @@ export const auth = betterAuth({
           mapProfileToUser: (profile) => {
             return {
               ...profile,
-              name: [profile.firstname, profile.lastname].join(" "),
-              image: profile.profile,
+              name:
+                [profile.firstname, profile.lastname]
+                  .filter(Boolean)
+                  .join(" "),
+              image: profile.profile ?? null,
             };
           },
         },
