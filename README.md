@@ -23,30 +23,62 @@ WIP Game of G.N.A.R. tracker
 
 ### Prerequisites
 
-1. An up-to-date version of [node.js](https://nodejs.org)
-   - [nvm](https://github.com/nvm-sh/nvm) or another node version manager is recommended
+1. [Node.js](https://nodejs.org), at the version pinned in `.nvmrc`
+   - With [nvm](https://github.com/nvm-sh/nvm), run `nvm install` (first time) or `nvm use` in the repo root.
 1. [pnpm](https://pnpm.io/installation)
-   - the [corepack](https://pnpm.io/installation#using-corepack) installation method is recommended, as it's the easiest
-1. a local postgres database. We use supabase, but any postgres database will work
-   - instructions for local supabase installation can be found [here](https://supabase.com/docs/guides/local-development/cli/getting-started)
+   - The [corepack](https://pnpm.io/installation#using-corepack) install method is recommended.
+1. [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+1. [Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started)
+1. A Strava API application ([strava.com/settings/api](https://www.strava.com/settings/api)):
+   - The account that owns the app needs an active **Strava subscription**. Standard Tier API access is subscriber-only.
 
 ### Installation
 
-1. Clone the repository
-1. Copy `.env.local.example` to `.env.local` and fill in the required variables
-1. Install dependencies:
+1. Clone the repository and install dependencies:
 
-```bash
-pnpm install
-```
+   ```bash
+   pnpm install
+   ```
 
-4. Start the development server:
+1. Start Docker Desktop and wait until it's running, then start the local Supabase stack from the repo root:
 
-```bash
-pnpm dev
-```
+   ```bash
+   supabase start
+   ```
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser
+   It prints the local URLs. The ones you'll use:
+
+   | Service  | URL                                                       |
+   | -------- | --------------------------------------------------------- |
+   | Postgres | `postgresql://postgres:postgres@127.0.0.1:54322/postgres` |
+   | Studio   | http://127.0.0.1:54323                                    |
+
+1. Copy `.env.local.example` to `.env.local` and fill it in:
+   - `DATABASE_URL`: the local Postgres URL above
+   - `AUTH_STRAVA_ID` / `AUTH_STRAVA_SECRET`: from your Strava API application
+
+
+1. Apply the schema to the local database:
+
+   ```bash
+   pnpm drizzle-kit migrate
+   ```
+
+   Check that the tables exist in Studio (http://127.0.0.1:54323).
+
+1. Start the development server:
+
+   ```bash
+   pnpm dev
+   ```
+
+1. Open [http://localhost:3000](http://localhost:3000)
+
+### Day to day
+
+- **Start:** with Docker running, run `supabase start`, then `pnpm dev`.
+- **Stop:** stop the dev server with `Ctrl+C`, then run `supabase stop`.
+- Local Supabase keeps its data in a Docker volume, so users and sessions persist between runs.
 
 ## Database Migrations
 
