@@ -19,6 +19,11 @@ export default function UserImage({ className }: { className?: string }) {
             height={150}
             src={session?.user?.image ?? ""}
             alt={session?.user?.name ?? ""}
+            // Avatar URLs are athlete-controlled (any host). Render unoptimized
+            // so Next never fetches them server-side, and drop the referrer so
+            // we don't leak the viewer to the avatar host.
+            unoptimized
+            referrerPolicy="no-referrer"
           />
         ) : (
           <div style={{ height: 150, width: 150 }} />
