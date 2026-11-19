@@ -12,27 +12,21 @@ import { vi } from "vitest";
 export const authMock = {
   api: {
     getSession: vi.fn(),
-    userHasPermission: vi.fn(),
   },
 };
 
-export type Caller = "anonymous" | "user" | "admin";
+export type Caller = "anonymous" | "user";
 
 export function actAs(caller: Caller) {
-  const { getSession, userHasPermission } = authMock.api;
+  const { getSession } = authMock.api;
 
   if (caller === "anonymous") {
     getSession.mockResolvedValue(null);
-    userHasPermission.mockResolvedValue({ error: null, success: false });
     return;
   }
 
   getSession.mockResolvedValue({
     user: { id: `${caller}-id` },
     session: { id: `${caller}-session` },
-  });
-  userHasPermission.mockResolvedValue({
-    error: null,
-    success: caller === "admin",
   });
 }
