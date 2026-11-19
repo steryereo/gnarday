@@ -1,26 +1,39 @@
 name: Migrate Database
 
+# Netlify deploys don't emit GitHub deployment events, so migrations run on
+# push to main instead. Only additive migrations are safe to ship alongside
+# the code that uses them; for destructive ones (drops/renames), merge the
+# code change first and the migration in a later PR.
 on:
-  deployment_status:
+  push:
+    branches: [main]
+    paths:
+      - "drizzle/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never run two migrations against the same database at once.
+concurrency:
+  group: migrate-production
+  cancel-in-progress: false
+
 jobs:
   migrate:
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.event.deployment_status.environment == 'production'
     runs-on: ubuntu-latest
     environment: production
-    strategy:
-      matrix:
-        node-version: [20]
     steps:
       - uses: actions/checkout@v4
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
           cache: "pnpm"
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - name: Migrate Database
         run: pnpm drizzle-kit migrate
         env:
