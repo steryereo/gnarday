@@ -2,8 +2,6 @@
 
 Count the number of days you've skied this season based on Strava activities.
 
-WIP Game of G.N.A.R. tracker
-
 ## Tech Stack
 
 ### Frontend

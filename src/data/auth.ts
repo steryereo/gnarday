@@ -1,7 +1,6 @@
 import "server-only";
 
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { cache } from "react";
 
 import { auth } from "@/src/lib/auth/auth";
@@ -10,8 +9,7 @@ export type AuthErrorKind = "unauthenticated" | "forbidden";
 
 /**
  * Thrown by the `require*` guards below. Server Actions map this to a
- * client-safe result (see `toActionError`); pages use `adminOnly()`, which
- * turns it into a redirect.
+ * client-safe result (see `toActionError`).
  */
 export class AuthError extends Error {
   readonly kind: AuthErrorKind;
@@ -39,39 +37,4 @@ export async function requireUser() {
   }
 
   return session;
-}
-
-export async function requireAdmin() {
-  const session = await requireUser();
-
-  const { success } = await auth.api.userHasPermission({
-    body: {
-      userId: session.user.id,
-      permission: {
-        adminSection: ["access"],
-      },
-    },
-  });
-
-  if (!success) {
-    throw new AuthError("forbidden");
-  }
-
-  return session;
-}
-
-/**
- * Page-level guard: redirect non-admins to the home page. Unlike
- * `requireAdmin()`, this swallows `AuthError` into a redirect so pages don't
- * need their own try/catch. Unexpected errors still propagate.
- */
-export async function adminOnly() {
-  try {
-    await requireAdmin();
-  } catch (error) {
-    if (error instanceof AuthError) {
-      redirect("/");
-    }
-    throw error;
-  }
 }
