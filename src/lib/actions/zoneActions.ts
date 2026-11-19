@@ -1,197 +1,75 @@
 "use server";
+import "server-only";
 
-import { asc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-import { db } from "@/src/db";
-import { zones } from "@/src/db/schema";
+import { createZone, deleteZone, updateZone } from "@/src/data/zones";
 
-import { z } from "zod";
+import { insertZoneSchema } from "../zod-schemas/gnar";
+import { ActionError, idSchema, toActionError } from "./actionErrors";
 
-import { InsertZone, insertZoneSchema } from "../zod-schemas/gnar";
+const zoneFormSchema = insertZoneSchema.pick({
+  name: true,
+  description: true,
+  directions: true,
+  squallywoodPage: true,
+});
 
-export async function getZones() {
-  try {
-    const allZones = await db
-      .select({
-        id: zones.id,
-        name: zones.name,
-        description: zones.description,
-        directions: zones.directions,
-        squallywoodPage: zones.squallywoodPage,
-        createdAt: zones.createdAt,
-        updatedAt: zones.updatedAt,
-      })
-      .from(zones)
-      .orderBy(asc(zones.squallywoodPage));
+type ZoneFormState = { success: true } | ActionError;
 
-    return allZones;
-  } catch (error) {
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch zones",
-    );
-  }
+function parseZoneFields(formData: FormData) {
+  const squallywoodPage = formData.get("squallywoodPage");
+
+  return zoneFormSchema.parse({
+    name: formData.get("name"),
+    description: formData.get("description"),
+    directions: formData.get("directions"),
+    squallywoodPage:
+      squallywoodPage && squallywoodPage !== ""
+        ? Number(squallywoodPage)
+        : null,
+  });
 }
-
-export async function getZone(id: number) {
-  try {
-    const [zone] = await db
-      .select({
-        id: zones.id,
-        name: zones.name,
-        description: zones.description,
-        directions: zones.directions,
-        squallywoodPage: zones.squallywoodPage,
-        createdAt: zones.createdAt,
-        updatedAt: zones.updatedAt,
-      })
-      .from(zones)
-      .where(eq(zones.id, id));
-
-    return zone;
-  } catch (error) {
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch zone",
-    );
-  }
-}
-
-type CreateZoneResult =
-  | { success: true; data: { insertedId: number } }
-  | { success: false; error: string };
-
-export async function createZone(
-  data: InsertZone,
-): Promise<CreateZoneResult> {
-  try {
-    const [newZone] = await db
-      .insert(zones)
-      .values(data)
-      .returning({ insertedId: zones.id });
-
-    revalidatePath("/admin/zones");
-
-    return { success: true, data: newZone };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create zone",
-    };
-  }
-}
-
-type UpdateZoneResult =
-  | { success: true; data: { updatedId: number } }
-  | { success: false; error: string };
-
-export async function updateZone(
-  data: InsertZone,
-  id: number,
-): Promise<UpdateZoneResult> {
-  try {
-    const [updatedZone] = await db
-      .update(zones)
-      .set(data)
-      .where(eq(zones.id, id))
-      .returning({ updatedId: zones.id });
-
-    if (!updatedZone) {
-      return { success: false, error: "Zone not found" };
-    }
-
-    revalidatePath("/admin/zones");
-    revalidatePath(`/admin/zones/${id}`);
-
-    return { success: true, data: updatedZone };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update zone",
-    };
-  }
-}
-
-type DeleteZoneResult =
-  | { success: true }
-  | { success: false; error: string };
-
-export async function deleteZone(id: number): Promise<DeleteZoneResult> {
-  try {
-    await db.delete(zones).where(eq(zones.id, id));
-
-    revalidatePath("/admin/zones");
-
-    return { success: true };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to delete zone",
-    };
-  }
-}
-
-type ZoneFormState =
-  | { success: true }
-  | { success: false; error: string; fieldErrors?: Record<string, string> };
 
 export async function submitZoneForm(
   _previousState: ZoneFormState | null,
   formData: FormData,
 ): Promise<ZoneFormState> {
   try {
-    const zoneId = formData.get("zoneId");
-    const squallywoodPageValue = formData.get("squallywoodPage");
-    const data = {
-      name: formData.get("name") as string,
-      description: formData.get("description") as string,
-      directions: formData.get("directions") as string,
-      squallywoodPage:
-        squallywoodPageValue && squallywoodPageValue !== ""
-          ? parseInt(squallywoodPageValue as string)
-          : null,
-    };
+    const data = parseZoneFields(formData);
+    const zoneIdValue = formData.get("zoneId");
 
-    const validatedData = insertZoneSchema.parse(data);
+    if (zoneIdValue != null && zoneIdValue !== "") {
+      const zoneId = idSchema.parse(zoneIdValue);
+      const updated = await updateZone(zoneId, data);
 
-    if (zoneId) {
-      const updateResult = await updateZone(
-        validatedData,
-        parseInt(zoneId as string),
-      );
-      if (!updateResult.success) {
-        return {
-          success: false,
-          error: updateResult.error,
-        };
+      if (!updated) {
+        return { success: false, error: "Zone not found" };
       }
+
+      revalidatePath("/admin/zones");
+      revalidatePath(`/admin/zones/${zoneId}`);
     } else {
-      const createResult = await createZone(validatedData);
-      if (!createResult.success) {
-        return {
-          success: false,
-          error: createResult.error,
-        };
-      }
+      await createZone(data);
+      revalidatePath("/admin/zones");
     }
+
     return { success: true };
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      const fieldErrors: Record<string, string> = {};
-      error.errors.forEach((err) => {
-        if (err.path[0]) {
-          fieldErrors[err.path[0].toString()] = err.message;
-        }
-      });
+    return toActionError(error, "Failed to save zone");
+  }
+}
 
-      return {
-        success: false,
-        error: error.errors.map((e) => e.message).join(", "),
-        fieldErrors: Object.keys(fieldErrors).length > 0 ? fieldErrors : undefined,
-      };
-    }
-    return {
-      success: false,
-      error: "Something went wrong. Please try again.",
-    };
+export async function deleteZoneAction(
+  id: unknown,
+): Promise<{ success: true } | ActionError> {
+  try {
+    const zoneId = idSchema.parse(id);
+    await deleteZone(zoneId);
+    revalidatePath("/admin/zones");
+
+    return { success: true };
+  } catch (error) {
+    return toActionError(error, "Failed to delete zone");
   }
 }

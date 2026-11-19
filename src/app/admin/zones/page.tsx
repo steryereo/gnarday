@@ -1,8 +1,8 @@
 import { Edit } from "lucide-react";
 import Link from "next/link";
 
-import { adminOnly } from "@/src/lib/actions/userActions";
-import { getZones } from "@/src/lib/actions/zoneActions";
+import { adminOnly } from "@/src/data/auth";
+import { listZones } from "@/src/data/zones";
 import {
   Card,
   CardContent,
@@ -23,7 +23,7 @@ import DeleteZoneButton from "@/src/components/DeleteZoneButton";
 export default async function ZonePage() {
   await adminOnly();
 
-  const zones = await getZones();
+  const zones = await listZones();
 
   return (
     <Card>
