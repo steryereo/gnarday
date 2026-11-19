@@ -1,6 +1,5 @@
 import { eq, and } from "drizzle-orm";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 import { db } from "@/src/db";
 import { account } from "@/src/db/schema";
@@ -55,25 +54,4 @@ export async function getAccountForCurrentUser(
   }
 
   return { success: true, data: userAccount };
-}
-
-export async function adminOnly() {
-  const session = await getSession();
-
-  if (!session) {
-    return redirect("/");
-  }
-
-  const userHasPermission = await auth.api.userHasPermission({
-    body: {
-      userId: session.user.id,
-      permission: {
-        adminSection: ["access"],
-      },
-    },
-  });
-
-  if (!userHasPermission.success) {
-    return redirect("/");
-  }
 }

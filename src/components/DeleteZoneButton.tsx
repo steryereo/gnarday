@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Trash2, Loader2 } from "lucide-react";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 
-import { deleteZone } from "@/src/lib/actions/zoneActions";
+import { deleteZoneAction } from "@/src/lib/actions/zoneActions";
 
 import { Button } from "./ui/button";
 import {
@@ -38,7 +38,7 @@ export default function DeleteZoneButton({
 
     setIsDeleting(true);
 
-    const result = await deleteZone(zoneId);
+    const result = await deleteZoneAction(zoneId);
 
     if (result.success) {
       router.refresh();

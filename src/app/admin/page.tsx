@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/components/ui/card";
-import { adminOnly } from "@/src/lib/actions/userActions";
+import { adminOnly } from "@/src/data/auth";
 
 export default async function AdminPage() {
   await adminOnly();

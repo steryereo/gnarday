@@ -1,19 +1,10 @@
-import { getZone } from "@/src/lib/actions/zoneActions";
-import { adminOnly } from "@/src/lib/actions/userActions";
+import { notFound } from "next/navigation";
+
+import { adminOnly } from "@/src/data/auth";
+import { getZone } from "@/src/data/zones";
+import { idSchema } from "@/src/lib/actions/actionErrors";
 
 import { ZoneForm } from "./ZoneForm";
-
-async function getZoneFromParams(params: Promise<{ zoneId: string }>) {
-  const { zoneId } = await params;
-
-  const zoneIdInt = parseInt(zoneId);
-
-  if (!isNaN(zoneIdInt)) {
-    return await getZone(zoneIdInt);
-  }
-
-  return undefined;
-}
 
 export default async function ZonePage({
   params,
@@ -22,7 +13,21 @@ export default async function ZonePage({
 }) {
   await adminOnly();
 
-  const zone = await getZoneFromParams(params);
+  const { zoneId } = await params;
+
+  if (zoneId === "new") {
+    return <ZoneForm />;
+  }
+
+  const parsed = idSchema.safeParse(zoneId);
+  if (!parsed.success) {
+    notFound();
+  }
+
+  const zone = await getZone(parsed.data);
+  if (!zone) {
+    notFound();
+  }
 
   return <ZoneForm zone={zone} />;
 }
