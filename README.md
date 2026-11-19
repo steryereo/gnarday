@@ -85,7 +85,7 @@ We use Drizzle ORM to manage database migrations, following "Option 3" from the 
 1. Make changes to the database schema by editing the files in `src/db/schema` (more info [here](https://orm.drizzle.team/docs/sql-schema-declaration#schema-in-multiple-files))
 1. run `pnpm drizzle-kit generate` to generate migration files based on your changes
 1. run `pnpm drizzle-kit migrate` to apply the migrations to your local database
-1. if everything looks good, make a pull request with your changes. The migrations will be applied to the production database when the changes are merged into the `main` branch
+1. if everything looks good, make a pull request with your changes. The migrations will be applied to the production database after the changes are merged into the `main` branch and the production deploy succeeds
 
 ## Testing
 
