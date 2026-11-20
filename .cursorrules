@@ -482,11 +482,9 @@ export default function ClientComponent({ data }: { data: DataType }) {
 - Use `formState.errors` for displaying field-level errors
 
 ### Better Auth Patterns
-- Use `auth.api.getSession({ headers: await headers() })` for session checks
-- Use `auth.api.userHasPermission()` for permission checks
-- Use `signIn.oauth2()` from auth client for OAuth flows
-- Configure OAuth providers with `genericOAuth` plugin
-- Use `admin` plugin with access control (AC) for role-based permissions
+- Use `getCurrentSession()` / `requireUser()` from `src/data/auth.ts` for session checks (they wrap `auth.api.getSession({ headers: await headers() })`)
+- Use `signIn.social({ provider: "strava" })` from auth client for OAuth sign-in
+- Configure OAuth providers with `genericOAuth` plugin (server only; there is no client plugin since better-auth 1.7)
 - Store auth configuration in `lib/auth/auth.ts`
 - Export auth client from `lib/auth/auth-client.ts` for client-side usage
 - Use `drizzleAdapter` with Better Auth for database integration
