@@ -16,8 +16,8 @@ export default function LoginButton() {
     setIsLoading(true);
     setError(null);
 
-    signIn.oauth2({
-      providerId: "strava",
+    signIn.social({
+      provider: "strava",
       callbackURL: "/",
     }, {
       onError: () => {
