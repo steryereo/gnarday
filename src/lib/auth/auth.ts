@@ -6,6 +6,7 @@ import * as schema from "@/src/db/schema";
 
 import { env } from "@/src/lib/env";
 import { db } from "../../db";
+import { mapStravaProfileToUser } from "./strava";
 
 export const auth = betterAuth({
   account: {
@@ -65,16 +66,7 @@ export const auth = betterAuth({
               email: `${profile.id}@stravadummyemail.com`,
             };
           },
-          mapProfileToUser: (profile) => {
-            return {
-              ...profile,
-              name:
-                [profile.firstname, profile.lastname]
-                  .filter(Boolean)
-                  .join(" "),
-              image: profile.profile ?? null,
-            };
-          },
+          mapProfileToUser: mapStravaProfileToUser,
         },
       ],
     }),
