@@ -12,6 +12,8 @@ import { vi } from "vitest";
 export const authMock = {
   api: {
     getSession: vi.fn(),
+    listUserAccounts: vi.fn(),
+    getAccessToken: vi.fn(),
   },
 };
 

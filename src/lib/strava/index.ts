@@ -1,2 +1,2 @@
-export { getActivities, refreshAccessToken } from "./api";
+export { getActivities } from "./api";
 export { formatResults } from "./dataFormatters";
