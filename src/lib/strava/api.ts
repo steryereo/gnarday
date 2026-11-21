@@ -3,6 +3,8 @@ import { getSeasonStart } from "./season";
 import { SummaryActivity } from "./types";
 
 const ONE_DAY_IN_SECONDS = 24 * 60 * 60;
+const PAGE_SIZE = 200;
+const MAX_PAGES = 10;
 
 // TODO: use date-fns instead?
 function toEpochSeconds(dateString: string) {
@@ -11,13 +13,15 @@ function toEpochSeconds(dateString: string) {
   return Math.floor(millisecondEpoch / 1000);
 }
 
-export async function getActivities(
+async function getActivitiesPage(
   accessToken: string,
-  startDate: string = getSeasonStart()
+  after: number,
+  page: number,
 ): Promise<SummaryActivity[]> {
   const params = new URLSearchParams({
-    after: (toEpochSeconds(startDate) - ONE_DAY_IN_SECONDS).toString(),
-    per_page: "200",
+    after: after.toString(),
+    per_page: PAGE_SIZE.toString(),
+    page: page.toString(),
   });
 
   const response = await fetch(`${ACTIVITIES_URL}?${params}`, {
@@ -34,7 +38,24 @@ export async function getActivities(
     );
   }
 
-  const activities: SummaryActivity[] = await response.json();
+  return response.json();
+}
+
+export async function getActivities(
+  accessToken: string,
+  startDate: string = getSeasonStart()
+): Promise<SummaryActivity[]> {
+  const after = toEpochSeconds(startDate) - ONE_DAY_IN_SECONDS;
+  const activities: SummaryActivity[] = [];
+
+  for (let page = 1; page <= MAX_PAGES; page++) {
+    const pageActivities = await getActivitiesPage(accessToken, after, page);
+    activities.push(...pageActivities);
+
+    if (pageActivities.length < PAGE_SIZE) {
+      break;
+    }
+  }
 
   return activities.filter(
     ({ start_date_local }) => start_date_local.slice(0, 10) >= startDate,
