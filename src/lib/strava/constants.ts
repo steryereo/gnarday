@@ -2,8 +2,6 @@ export const URL_BASE = "https://www.strava.com/api/v3";
 
 export const ACTIVITIES_URL = `${URL_BASE}/athlete/activities`;
 
-export const START_DATE = "2025-11-01";
-
 export const ALL_SPORT_TYPES = [
   "AlpineSki",
   "BackcountrySki",
