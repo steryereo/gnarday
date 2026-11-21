@@ -2,6 +2,8 @@ import { ACTIVITIES_URL } from "./constants";
 import { getSeasonStart } from "./season";
 import { SummaryActivity } from "./types";
 
+const ONE_DAY_IN_SECONDS = 24 * 60 * 60;
+
 // TODO: use date-fns instead?
 function toEpochSeconds(dateString: string) {
   const millisecondEpoch = new Date(dateString).valueOf();
@@ -14,7 +16,7 @@ export async function getActivities(
   startDate: string = getSeasonStart()
 ): Promise<SummaryActivity[]> {
   const params = new URLSearchParams({
-    after: toEpochSeconds(startDate).toString(),
+    after: (toEpochSeconds(startDate) - ONE_DAY_IN_SECONDS).toString(),
     per_page: "200",
   });
 
@@ -32,5 +34,9 @@ export async function getActivities(
     );
   }
 
-  return response.json();
+  const activities: SummaryActivity[] = await response.json();
+
+  return activities.filter(
+    ({ start_date_local }) => start_date_local.slice(0, 10) >= startDate,
+  );
 }
