@@ -9,6 +9,8 @@ import { db } from "../../db";
 import { mapStravaProfileToUser } from "./strava";
 
 export const auth = betterAuth({
+  secret: env.BETTER_AUTH_SECRET,
+  baseURL: env.BETTER_AUTH_URL,
   account: {
     accountLinking: {
       // Strava does not provide an email address - this option is a workaround https://www.better-auth.com/docs/concepts/users-accounts#manually-linking-accounts
