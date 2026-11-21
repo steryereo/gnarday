@@ -23,10 +23,22 @@ export async function getData() {
     redirect("/login");
   }
 
-  const { accessToken } = await auth.api.getAccessToken({
-    body: { accountId: stravaAccount.id },
-    headers: requestHeaders,
-  });
+  let accessToken: string | undefined;
+
+  try {
+    ({ accessToken } = await auth.api.getAccessToken({
+      body: { accountId: stravaAccount.id },
+      headers: requestHeaders,
+    }));
+  } catch (error) {
+    console.error("[strava] could not get an access token", {
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
+
+  if (!accessToken) {
+    redirect("/login");
+  }
 
   const activities = await getActivities(accessToken);
 

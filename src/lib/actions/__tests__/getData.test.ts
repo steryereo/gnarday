@@ -35,6 +35,8 @@ const FORMATTED_RESULTS = {
 beforeEach(() => {
   vi.clearAllMocks();
   authMock.api.getSession.mockReset();
+  authMock.api.listUserAccounts.mockReset();
+  authMock.api.getAccessToken.mockReset();
 });
 
 describe("getData", () => {
@@ -66,12 +68,32 @@ describe("getData", () => {
       vi.mocked(formatResults).mockReturnValue(FORMATTED_RESULTS);
     });
 
-    test("gets the access token for the Strava account", async () => {
+    test("gets the access token for the Strava account with the request headers", async () => {
       await getData();
 
-      expect(authMock.api.getAccessToken).toHaveBeenCalledWith(
-        expect.objectContaining({ body: { accountId: STRAVA_ACCOUNT.id } }),
+      expect(authMock.api.listUserAccounts).toHaveBeenCalledWith({
+        headers: expect.any(Headers),
+      });
+      expect(authMock.api.getAccessToken).toHaveBeenCalledWith({
+        body: { accountId: STRAVA_ACCOUNT.id },
+        headers: expect.any(Headers),
+      });
+    });
+
+    test("redirects to login when getting the access token fails", async () => {
+      authMock.api.getAccessToken.mockRejectedValue(
+        new Error("FAILED_TO_GET_ACCESS_TOKEN"),
       );
+
+      await expect(getData()).rejects.toThrow("NEXT_REDIRECT");
+      expect(getActivities).not.toHaveBeenCalled();
+    });
+
+    test("redirects to login when the access token is empty", async () => {
+      authMock.api.getAccessToken.mockResolvedValue({ accessToken: "" });
+
+      await expect(getData()).rejects.toThrow("NEXT_REDIRECT");
+      expect(getActivities).not.toHaveBeenCalled();
     });
 
     test("fetches activities with the returned access token", async () => {
