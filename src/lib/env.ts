@@ -7,10 +7,16 @@ export const envSchema = z.object({
   BETTER_AUTH_SECRET: z
     .string({ required_error: "BETTER_AUTH_SECRET is required" })
     .min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
-  BETTER_AUTH_URL: z
-    .string()
-    .url("BETTER_AUTH_URL must be a full URL, e.g. https://example.com")
-    .optional(),
+  BETTER_AUTH_URL: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z
+      .string()
+      .url("BETTER_AUTH_URL must be a full URL, e.g. https://example.com")
+      .refine((value) => /^https?:\/\//.test(value), {
+        message: "BETTER_AUTH_URL must start with http:// or https://",
+      })
+      .optional(),
+  ),
 });
 
 export const env = envSchema.parse(process.env);
