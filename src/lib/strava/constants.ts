@@ -1,7 +1,6 @@
 export const URL_BASE = "https://www.strava.com/api/v3";
 
 export const ACTIVITIES_URL = `${URL_BASE}/athlete/activities`;
-export const TOKEN_URL = `${URL_BASE}/oauth/token`;
 
 export const START_DATE = "2025-11-01";
 

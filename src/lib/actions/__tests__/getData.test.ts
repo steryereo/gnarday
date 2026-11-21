@@ -1,18 +1,20 @@
 // @vitest-environment node
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
-import {
-  formatResults,
-  getActivities,
-  refreshAccessToken,
-} from "@/src/lib/strava";
+import { formatResults, getActivities } from "@/src/lib/strava";
+import { actAs, authMock } from "@/test/mocks/auth";
 
 import { SUMMARY_ACTIVITY } from "../../strava/__fixtures__";
 import { getData } from "../stravaActions";
-import { getAccountForCurrentUser } from "../userActions";
 
 vi.mock("@/src/lib/strava");
-vi.mock("../userActions");
+vi.mock("@/src/lib/auth/auth", async () => ({
+  auth: (await import("@/test/mocks/auth")).authMock,
+}));
+vi.mock("@/src/db", async () => ({
+  db: (await import("@/test/mocks/db")).dbMock.db,
+}));
+vi.mock("next/headers", () => ({ headers: vi.fn(async () => new Headers()) }));
 vi.mock("next/navigation", () => ({
   redirect: vi.fn(() => {
     const error = new Error("NEXT_REDIRECT");
@@ -22,88 +24,65 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-const REFRESH_TOKEN = "abc";
-const ACCESS_TOKEN = "123";
+const ACCESS_TOKEN = "fresh-access-token";
+const STRAVA_ACCOUNT = { id: "strava-row-id", providerId: "strava" };
 const FORMATTED_RESULTS = {
   activityCount: 1,
   dayCount: 1,
   dateRange: ["2023-12-25T13:54:48Z", "2023-12-25T13:54:48Z"],
 };
 
+beforeEach(() => {
+  vi.clearAllMocks();
+  authMock.api.getSession.mockReset();
+});
+
 describe("getData", () => {
-  describe("when not logged in", () => {
-    test("redirects to login", async () => {
-      vi.mocked(getAccountForCurrentUser).mockResolvedValue({
-        success: false,
-        error: "unauthorized",
-      });
+  test("redirects to login when not logged in", async () => {
+    actAs("anonymous");
 
-      await expect(getData()).rejects.toThrow("NEXT_REDIRECT");
-    });
+    await expect(getData()).rejects.toThrow("NEXT_REDIRECT");
+    expect(authMock.api.getAccessToken).not.toHaveBeenCalled();
   });
 
-  describe("when account not found", () => {
-    test("redirects to login", async () => {
-      vi.mocked(getAccountForCurrentUser).mockResolvedValue({
-        success: false,
-        error: "account not found",
-      });
+  test("redirects to login when the user has no Strava account", async () => {
+    actAs("user");
+    authMock.api.listUserAccounts.mockResolvedValue([
+      { id: "other-row-id", providerId: "credential" },
+    ]);
 
-      await expect(getData()).rejects.toThrow();
-    });
+    await expect(getData()).rejects.toThrow("NEXT_REDIRECT");
+    expect(authMock.api.getAccessToken).not.toHaveBeenCalled();
   });
 
-  describe("when logged in", () => {
-    const mockAccount = {
-      id: "account-id",
-      accountId: "strava-123",
-      providerId: "strava",
-      userId: "user-id",
-      accessToken: "old-token",
-      refreshToken: REFRESH_TOKEN,
-      idToken: null,
-      accessTokenExpiresAt: new Date(Date.now() - 1000), // Expired
-      refreshTokenExpiresAt: null,
-      scope: null,
-      password: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
+  describe("when logged in with a Strava account", () => {
     beforeEach(() => {
-      vi.mocked(getAccountForCurrentUser).mockResolvedValue({
-        success: true,
-        data: mockAccount,
-      });
-      vi.mocked(refreshAccessToken).mockResolvedValue({
-        access_token: ACCESS_TOKEN,
+      actAs("user");
+      authMock.api.listUserAccounts.mockResolvedValue([STRAVA_ACCOUNT]);
+      authMock.api.getAccessToken.mockResolvedValue({
+        accessToken: ACCESS_TOKEN,
       });
       vi.mocked(getActivities).mockResolvedValue([SUMMARY_ACTIVITY]);
-      vi.mocked(formatResults).mockResolvedValue(FORMATTED_RESULTS);
+      vi.mocked(formatResults).mockReturnValue(FORMATTED_RESULTS);
     });
 
-    test("calls refreshAccessToken", async () => {
+    test("gets the access token for the Strava account", async () => {
       await getData();
 
-      expect(refreshAccessToken).toHaveBeenCalledWith(REFRESH_TOKEN);
+      expect(authMock.api.getAccessToken).toHaveBeenCalledWith(
+        expect.objectContaining({ body: { accountId: STRAVA_ACCOUNT.id } }),
+      );
     });
 
-    test("calls getActivities with the refreshed access_token", async () => {
+    test("fetches activities with the returned access token", async () => {
       await getData();
 
       expect(getActivities).toHaveBeenCalledWith(ACCESS_TOKEN);
     });
 
-    test("calls formatResults on the fetched activities", async () => {
-      await getData();
-
+    test("returns the formatted activities", async () => {
+      expect(await getData()).toEqual(FORMATTED_RESULTS);
       expect(formatResults).toHaveBeenCalledWith([SUMMARY_ACTIVITY]);
-    });
-
-    test("returns the result of formatResults", async () => {
-      const results = await getData();
-
-      expect(results).toEqual(FORMATTED_RESULTS);
     });
   });
 });

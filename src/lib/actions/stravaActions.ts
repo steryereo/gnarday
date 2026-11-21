@@ -1,69 +1,34 @@
 "use server";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import {
-  formatResults,
-  getActivities,
-  refreshAccessToken,
-} from "@/src/lib/strava";
-
-import { getAccountForCurrentUser } from "./userActions";
-
-type GetTokenResult =
-  | { success: true; token: string }
-  | { success: false; error: string };
-
-async function getUpToDateAccessToken(account: {
-  accessToken: string | null;
-  refreshToken: string | null;
-  accessTokenExpiresAt: Date | null;
-}): Promise<GetTokenResult> {
-  if (
-    !account.accessTokenExpiresAt ||
-    !account.refreshToken ||
-    !account.accessToken
-  ) {
-    return { success: false, error: "incomplete strava account" };
-  }
-
-  if (account.accessTokenExpiresAt < new Date()) {
-    try {
-      const { access_token: accessToken } = await refreshAccessToken(
-        account.refreshToken
-      );
-
-      return { success: true, token: accessToken };
-    } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : "failed to refresh token",
-      };
-    }
-  }
-
-  return { success: true, token: account.accessToken };
-}
+import { getCurrentSession } from "@/src/data/auth";
+import { auth } from "@/src/lib/auth/auth";
+import { formatResults, getActivities } from "@/src/lib/strava";
 
 export async function getData() {
-  const accountResult = await getAccountForCurrentUser("strava");
+  const session = await getCurrentSession();
 
-  if (!accountResult.success) {
-    if (accountResult.error === "unauthorized") {
-      redirect("/login");
-    }
-    throw new Error(accountResult.error);
+  if (!session) {
+    redirect("/login");
   }
 
-  const tokenResult = await getUpToDateAccessToken(accountResult.data);
+  const requestHeaders = await headers();
+  const accounts = await auth.api.listUserAccounts({ headers: requestHeaders });
+  const stravaAccount = accounts.find(
+    (account) => account.providerId === "strava",
+  );
 
-  if (!tokenResult.success) {
-    if (tokenResult.error === "incomplete strava account") {
-      redirect("/login");
-    }
-    throw new Error(tokenResult.error);
+  if (!stravaAccount) {
+    redirect("/login");
   }
 
-  const activities = await getActivities(tokenResult.token);
+  const { accessToken } = await auth.api.getAccessToken({
+    body: { accountId: stravaAccount.id },
+    headers: requestHeaders,
+  });
+
+  const activities = await getActivities(accessToken);
 
   return formatResults(activities);
 }
