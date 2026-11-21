@@ -1,4 +1,5 @@
-import { ACTIVITIES_URL, START_DATE } from "./constants";
+import { ACTIVITIES_URL } from "./constants";
+import { getSeasonStart } from "./season";
 import { SummaryActivity } from "./types";
 
 // TODO: use date-fns instead?
@@ -10,7 +11,7 @@ function toEpochSeconds(dateString: string) {
 
 export async function getActivities(
   accessToken: string,
-  startDate: string = START_DATE
+  startDate: string = getSeasonStart()
 ): Promise<SummaryActivity[]> {
   const params = new URLSearchParams({
     after: toEpochSeconds(startDate).toString(),
