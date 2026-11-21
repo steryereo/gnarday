@@ -13,6 +13,7 @@ export default defineConfig({
       AUTH_STRAVA_ID: "test-strava-id",
       AUTH_STRAVA_SECRET: "test-strava-secret",
       DATABASE_URL: "postgres://test:test@127.0.0.1:1/test",
+      BETTER_AUTH_SECRET: "test-better-auth-secret-at-least-32-chars",
     },
   },
   resolve: {
