@@ -38,7 +38,13 @@ async function getActivitiesPage(
     );
   }
 
-  return response.json();
+  const body: unknown = await response.json();
+
+  if (!Array.isArray(body)) {
+    throw new Error("Unexpected Strava activities response: not a list");
+  }
+
+  return body;
 }
 
 export async function getActivities(
@@ -54,6 +60,12 @@ export async function getActivities(
 
     if (pageActivities.length < PAGE_SIZE) {
       break;
+    }
+
+    if (page === MAX_PAGES) {
+      console.warn(
+        `[strava] stopped after ${MAX_PAGES} pages; newer activities were not fetched`,
+      );
     }
   }
 

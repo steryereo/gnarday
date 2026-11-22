@@ -79,6 +79,36 @@ describe("getActivities", () => {
     expect(fetchMock).toHaveBeenCalledTimes(10);
   });
 
+  test("warns when the page cap cuts off activities", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockStravaResponse(
+      Array.from({ length: 200 }, () => activity("2026-11-02T09:00:00Z")),
+    );
+
+    await getActivities("token");
+
+    expect(warn).toHaveBeenCalledOnce();
+    warn.mockRestore();
+  });
+
+  test("does not warn when all activities fit", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    mockStravaResponse([activity("2026-11-02T09:00:00Z")]);
+
+    await getActivities("token");
+
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  test("throws a clear error when Strava does not return a list", async () => {
+    mockStravaResponse({ message: "unexpected" } as unknown as unknown[]);
+
+    await expect(getActivities("token")).rejects.toThrow(
+      "Unexpected Strava activities response",
+    );
+  });
+
   test("keeps only activities whose local date is in the season", async () => {
     mockStravaResponse([
       activity("2026-10-31T19:00:00Z"),
