@@ -34,7 +34,7 @@ async function getActivitiesPage(
 
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch activities: ${response.status} ${response.statusText}`
+      `Failed to fetch activities: ${response.status} ${response.statusText}`,
     );
   }
 
@@ -49,7 +49,7 @@ async function getActivitiesPage(
 
 export async function getActivities(
   accessToken: string,
-  startDate: string = getSeasonStart()
+  startDate: string = getSeasonStart(),
 ): Promise<SummaryActivity[]> {
   const after = toEpochSeconds(startDate) - ONE_DAY_IN_SECONDS;
   const activities: SummaryActivity[] = [];

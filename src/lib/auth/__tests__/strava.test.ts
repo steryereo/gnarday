@@ -22,9 +22,9 @@ describe("mapStravaProfileToUser", () => {
   });
 
   test("handles a missing name part", () => {
-    expect(
-      mapStravaProfileToUser({ ...profile, lastname: null }).name,
-    ).toBe("Ada");
+    expect(mapStravaProfileToUser({ ...profile, lastname: null }).name).toBe(
+      "Ada",
+    );
   });
 
   test("leaves image undefined when Strava has no profile photo", () => {

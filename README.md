@@ -56,7 +56,6 @@ Count the number of days you've skied this season based on Strava activities.
    - `AUTH_STRAVA_ID` / `AUTH_STRAVA_SECRET`: from your Strava API application
    - `BETTER_AUTH_SECRET`: a random value of at least 32 characters (`openssl rand -base64 32`). Use a different value from production.
 
-
 1. Apply the schema to the local database:
 
    ```bash

@@ -52,7 +52,9 @@ describe("getActivities", () => {
 
     expect(activities).toHaveLength(250);
     expect(
-      fetchMock.mock.calls.map(([url]) => new URL(url).searchParams.get("page")),
+      fetchMock.mock.calls.map(([url]) =>
+        new URL(url).searchParams.get("page"),
+      ),
     ).toEqual(["1", "2"]);
   });
 

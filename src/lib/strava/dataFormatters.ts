@@ -12,10 +12,10 @@ function getUniqueDayCount(
     name: string;
     sport_type: string;
     start_date_local: string;
-  }[]
+  }[],
 ) {
   const datesWithoutTime = activities.map(
-    ({ start_date_local }) => start_date_local.split("T")[0]
+    ({ start_date_local }) => start_date_local.split("T")[0],
   );
 
   return new Set(datesWithoutTime).size;
@@ -23,7 +23,7 @@ function getUniqueDayCount(
 
 export function formatResults(results: SummaryActivity[]): FormattedResults {
   const filtered = results.filter((result) =>
-    DEFAULT_SPORT_TYPES.includes(result.sport_type)
+    DEFAULT_SPORT_TYPES.includes(result.sport_type),
   );
 
   const activities = filtered.map(({ name, sport_type, start_date_local }) => ({
