@@ -9,6 +9,13 @@ const OAUTH_CALLBACK_PARAMS = [
   "error_description",
 ];
 
+function hasOAuthCallbackParams(searchParams: URLSearchParams) {
+  return (
+    searchParams.has("state") &&
+    (searchParams.has("code") || searchParams.has("error"))
+  );
+}
+
 export async function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
 
@@ -17,12 +24,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Netlify copies the OAuth callback's query onto better-auth's redirect.
-  const { searchParams } = request.nextUrl;
-
-  if (
-    searchParams.has("state") &&
-    (searchParams.has("code") || searchParams.has("error"))
-  ) {
+  if (hasOAuthCallbackParams(request.nextUrl.searchParams)) {
     const cleanUrl = request.nextUrl.clone();
     OAUTH_CALLBACK_PARAMS.forEach((param) => cleanUrl.searchParams.delete(param));
 
