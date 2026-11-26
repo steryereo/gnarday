@@ -21,6 +21,17 @@ describe("envSchema", () => {
     ).toBe(false);
   });
 
+  test("explains that a missing BETTER_AUTH_SECRET is required", () => {
+    const result = envSchema.safeParse({
+      ...valid,
+      BETTER_AUTH_SECRET: undefined,
+    });
+
+    expect(result.error?.issues[0]?.message).toBe(
+      "BETTER_AUTH_SECRET is required",
+    );
+  });
+
   test("rejects a BETTER_AUTH_SECRET shorter than 32 characters", () => {
     expect(
       envSchema.safeParse({ ...valid, BETTER_AUTH_SECRET: "x".repeat(31) })
