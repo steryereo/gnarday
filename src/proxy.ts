@@ -28,7 +28,6 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Only the sign-in landing page. The home page checks the session itself.
 export const config = {
   matcher: ["/"],
 };
