@@ -1,11 +1,19 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import Count from "@/src/components/Count";
 import CounterText from "@/src/components/CounterText";
 import AvatarSection from "@/src/components/AvatarSection";
 import Preferences from "@/src/components/Preferences";
+import { getCurrentSession } from "@/src/data/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await getCurrentSession();
+
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
     <main className="flex flex-col flex-1 items-center text-center">
       <p className="text-6xl font-bold uppercase leading-snug">You have</p>
