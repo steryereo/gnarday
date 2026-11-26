@@ -7,10 +7,7 @@ import { auth } from "@/src/lib/auth/auth";
 
 export type AuthErrorKind = "unauthenticated" | "forbidden";
 
-/**
- * Thrown by the `require*` guards below. Server Actions map this to a
- * client-safe result (see `toActionError`).
- */
+/** Thrown by the `require*` guards below. */
 export class AuthError extends Error {
   readonly kind: AuthErrorKind;
 
