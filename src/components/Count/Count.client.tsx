@@ -30,6 +30,10 @@ export default function ClientCount({ count }: { count: number }) {
     const delays = computeDelays(count);
     let timeoutId: NodeJS.Timeout | null = null;
 
+    if (countRef.current) {
+      countRef.current.textContent = "0";
+    }
+
     function tick() {
       if (displayCount === count) return;
 
