@@ -23,7 +23,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Netlify copies the OAuth callback's query onto better-auth's redirect.
+  // Netlify copies the OAuth callback's query onto better-auth's redirect,
+  // so strip those params to leave the user on a clean URL.
   if (hasOAuthCallbackParams(request.nextUrl.searchParams)) {
     const cleanUrl = request.nextUrl.clone();
     OAUTH_CALLBACK_PARAMS.forEach((param) => cleanUrl.searchParams.delete(param));
