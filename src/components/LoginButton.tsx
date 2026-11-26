@@ -11,21 +11,24 @@ export default function LoginButton() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const errorId = "login-error";
-  
+
   function handleClick() {
     setIsLoading(true);
     setError(null);
 
-    signIn.social({
-      provider: "strava",
-      callbackURL: "/",
-    }, {
-      onError: () => {
-        setIsLoading(false);
-        
-        setError("Failed to login, try again.");
+    signIn.social(
+      {
+        provider: "strava",
+        callbackURL: "/",
       },
-    });
+      {
+        onError: () => {
+          setIsLoading(false);
+
+          setError("Failed to login, try again.");
+        },
+      },
+    );
   }
 
   return (
@@ -39,7 +42,9 @@ export default function LoginButton() {
         className="appearance-none bg-none border-none p-0 m-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Image alt="" src={stravaBtn} width={250} height={50} />
-        <VisuallyHidden>{isLoading ? "Connecting to Strava..." : "Connect with Strava"}</VisuallyHidden>
+        <VisuallyHidden>
+          {isLoading ? "Connecting to Strava..." : "Connect with Strava"}
+        </VisuallyHidden>
       </button>
       {error && (
         <p

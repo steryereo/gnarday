@@ -18,15 +18,15 @@ export default async function Home() {
     <main className="flex flex-col flex-1 items-center text-center">
       <p className="text-6xl font-bold uppercase leading-snug">You have</p>
       <div className="mt-2 mb-6">
-      <Suspense
+        <Suspense
           fallback={
             <AvatarSection isLoading>
-            <CounterText className="text-[2.5rem]">Loading...</CounterText>
+              <CounterText className="text-[2.5rem]">Loading...</CounterText>
             </AvatarSection>
           }
         >
-        <AvatarSection>
-          <Count />
+          <AvatarSection>
+            <Count />
           </AvatarSection>
         </Suspense>
       </div>

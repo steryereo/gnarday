@@ -46,10 +46,9 @@ export const auth = betterAuth({
                 headers: {
                   Authorization: `Bearer ${tokens.accessToken}`,
                 },
-              }
+              },
             );
 
-            
             const profile = await response.json().catch(() => null);
 
             if (!response.ok || typeof profile?.id !== "number") {

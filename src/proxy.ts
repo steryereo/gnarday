@@ -20,7 +20,9 @@ export async function proxy(request: NextRequest) {
   // so strip those params to leave the user on a clean URL.
   if (hasOAuthCallbackParams(request.nextUrl.searchParams)) {
     const cleanUrl = request.nextUrl.clone();
-    OAUTH_CALLBACK_PARAMS.forEach((param) => cleanUrl.searchParams.delete(param));
+    OAUTH_CALLBACK_PARAMS.forEach((param) =>
+      cleanUrl.searchParams.delete(param),
+    );
 
     return NextResponse.redirect(cleanUrl);
   }

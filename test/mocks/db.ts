@@ -18,7 +18,8 @@ const CHAIN_METHODS = [
   "returning",
 ] as const;
 
-type Chain = Record<(typeof CHAIN_METHODS)[number], Mock> & PromiseLike<unknown>;
+type Chain = Record<(typeof CHAIN_METHODS)[number], Mock> &
+  PromiseLike<unknown>;
 
 function createDbMock() {
   const state: { result: unknown; error: unknown } = {
@@ -46,7 +47,10 @@ function createDbMock() {
   function reset() {
     state.result = [];
     state.error = undefined;
-    for (const fn of [...Object.values(db), ...CHAIN_METHODS.map((m) => chain[m])]) {
+    for (const fn of [
+      ...Object.values(db),
+      ...CHAIN_METHODS.map((m) => chain[m]),
+    ]) {
       fn.mockClear();
     }
   }

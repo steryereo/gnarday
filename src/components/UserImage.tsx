@@ -9,7 +9,9 @@ export default function UserImage({ className }: { className?: string }) {
   const { data: session } = useSession();
 
   return (
-    <div className={cn("relative rounded-full border-onyx border-4", className)}>
+    <div
+      className={cn("relative rounded-full border-onyx border-4", className)}
+    >
       <div className="w-[200px] h-[200px] rounded-full p-8 bg-gradient-to-br from-green from-40% to-blue to-60% border-white border-2" />
       <div className="bg-pink absolute-center rounded-full overflow-hidden border-white border-2">
         {session?.user?.image ? (
