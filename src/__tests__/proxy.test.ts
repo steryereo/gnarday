@@ -26,9 +26,27 @@ describe("proxy", () => {
     expect(response.headers.get("x-middleware-next")).toBe("1");
   });
 
-  test("strips leftover OAuth callback params from the URL", async () => {
+  test("redirects to /login without OAuth params when signed out", async () => {
+    const response = await proxy(request("/?state=abc&code=def"));
+
+    expect(response.headers.get("location")).toBe("http://localhost:3000/login");
+  });
+
+  test("strips leftover OAuth callback params with a temporary redirect", async () => {
     const response = await proxy(
       request("/?state=abc&code=def&scope=read,activity:read_all", SESSION_COOKIE),
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe("http://localhost:3000/");
+  });
+
+  test("strips leftovers from a denied sign-in", async () => {
+    const response = await proxy(
+      request(
+        "/?state=abc&error=access_denied&error_description=denied",
+        SESSION_COOKIE,
+      ),
     );
 
     expect(response.headers.get("location")).toBe("http://localhost:3000/");

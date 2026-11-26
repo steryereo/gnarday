@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 
-const OAUTH_CALLBACK_PARAMS = ["state", "code", "scope"];
+const OAUTH_CALLBACK_PARAMS = [
+  "state",
+  "code",
+  "scope",
+  "error",
+  "error_description",
+];
 
 export async function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
@@ -13,7 +19,10 @@ export async function proxy(request: NextRequest) {
   // Netlify copies the OAuth callback's query onto better-auth's redirect.
   const { searchParams } = request.nextUrl;
 
-  if (searchParams.has("state") && searchParams.has("code")) {
+  if (
+    searchParams.has("state") &&
+    (searchParams.has("code") || searchParams.has("error"))
+  ) {
     const cleanUrl = request.nextUrl.clone();
     OAUTH_CALLBACK_PARAMS.forEach((param) => cleanUrl.searchParams.delete(param));
 
