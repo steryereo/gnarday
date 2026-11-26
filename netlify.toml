@@ -3,9 +3,3 @@
   to = "https://gnar.zone/:splat"
   status = 301
   force = true
-
-[[redirects]]
-  from = "https://deploy-preview-105--gnarzone.netlify.app/redirect-test/*"
-  to = "https://gnar.zone/:splat"
-  status = 301
-  force = true
