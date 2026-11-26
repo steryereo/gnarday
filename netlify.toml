@@ -1,0 +1,5 @@
+[[redirects]]
+  from = "https://gnarzone.netlify.app/*"
+  to = "https://gnar.zone/:splat"
+  status = 301
+  force = true
