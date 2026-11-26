@@ -18,10 +18,10 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname),
+      "@": path.resolve(import.meta.dirname),
       // Next.js resolves `server-only` internally; the npm package throws
       // outside the react-server condition, so stub it for tests.
-      "server-only": path.resolve(__dirname, "test/stubs/empty.ts"),
+      "server-only": path.resolve(import.meta.dirname, "test/stubs/empty.ts"),
     },
   },
 });

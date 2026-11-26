@@ -9,7 +9,7 @@ function activity(startDateLocal: string) {
 }
 
 function mockStravaResponse(activities: unknown[]) {
-  const fetchMock = vi.fn<[string], Promise<Response>>(async () =>
+  const fetchMock = vi.fn<(url: string) => Promise<Response>>(async () =>
     Response.json(activities),
   );
   vi.stubGlobal("fetch", fetchMock);
@@ -43,7 +43,7 @@ describe("getActivities", () => {
       "1": Array.from({ length: 200 }, () => activity("2026-11-02T09:00:00Z")),
       "2": Array.from({ length: 50 }, () => activity("2026-11-03T09:00:00Z")),
     };
-    const fetchMock = vi.fn<[string], Promise<Response>>(async (url) =>
+    const fetchMock = vi.fn<(url: string) => Promise<Response>>(async (url) =>
       Response.json(pages[new URL(url).searchParams.get("page") ?? ""] ?? []),
     );
     vi.stubGlobal("fetch", fetchMock);
@@ -57,7 +57,7 @@ describe("getActivities", () => {
   });
 
   test("stops after an empty page when the total is a multiple of the page size", async () => {
-    const fetchMock = vi.fn<[string], Promise<Response>>(async (url) =>
+    const fetchMock = vi.fn<(url: string) => Promise<Response>>(async (url) =>
       Response.json(
         new URL(url).searchParams.get("page") === "1"
           ? Array.from({ length: 200 }, () => activity("2026-11-02T09:00:00Z"))
