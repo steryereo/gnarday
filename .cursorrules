@@ -334,7 +334,7 @@ import { auth } from "@/src/lib/auth/auth";
 - Keep migrations focused and reversible
 - Use `pgSchema` to namespace tables
 - For Supabase: use `prepare: false` in postgres client configuration
-- Use `dotenv` in `drizzle.config.ts` to load `.env.local` for migrations
+- `drizzle.config.ts` loads `.env.local` with Node's `process.loadEnvFile` for migrations
 
 ### Query Patterns
 - Use transactions for related operations
@@ -652,7 +652,7 @@ export default function ClientComponent({ data }: { data: DataType }) {
 - Store all secrets in `.env.local` (git-ignored)
 - Use non-null assertions for required env vars: `process.env.VAR_NAME!`
 - Document required env vars in `.env.local.example` or README
-- Use `dotenv` in config files (e.g., `drizzle.config.ts`) to load `.env.local`
+- Use Node's `process.loadEnvFile` in config files (e.g., `drizzle.config.ts`) to load `.env.local`, guarded with `existsSync` so CI without the file still works
 
 ## When in Doubt
 
