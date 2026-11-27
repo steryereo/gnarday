@@ -361,7 +361,7 @@ import { auth } from "@/src/lib/auth/auth";
 - Prefer composition over custom CSS
 - Use `cn()` utility from `@/src/lib/utils` for conditional classes
 - Leverage Tailwind's responsive utilities
-- Use custom colors defined in `tailwind.config.ts`
+- Use custom colors defined in the `@theme` block of `src/app/globals.css`
 - Use `class-variance-authority` (CVA) for component variants
 
 ### Component Styling
@@ -369,7 +369,7 @@ import { auth } from "@/src/lib/auth/auth";
 - Style with Tailwind, not inline styles
 - Keep styling co-located with components
 - Use CSS variables for theme values (HSL format in `globals.css`)
-- Define custom colors in `tailwind.config.ts` and reference via CSS variables
+- Define custom colors as `--color-*` variables in the `@theme` block of `globals.css` (Tailwind 4 has no JS config)
 - Use `@layer base` in `globals.css` for base styles
 - Support dark mode with `.dark` class selector in CSS variables
 - Use Radix UI's `Slot` component with `asChild` prop for composition

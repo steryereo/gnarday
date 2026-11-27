@@ -1,72 +1,134 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-*: initial;
+  --color-white: #fff;
+
+  --color-pink-100: #46011d;
+  --color-pink-200: #8d023a;
+  --color-pink-300: #d30356;
+  --color-pink-400: #fc2279;
+  --color-pink-500: #fd66a3;
+  --color-pink-600: #fd86b6;
+  --color-pink-700: #fea5c8;
+  --color-pink-800: #fec3da;
+  --color-pink-900: #ffe1ed;
+  --color-pink: #fd66a3;
+
+  --color-blue-100: #082038;
+  --color-blue-200: #0f3f6f;
+  --color-blue-300: #175fa7;
+  --color-blue-400: #1e7edf;
+  --color-blue-500: #569fe8;
+  --color-blue-600: #77b1ec;
+  --color-blue-700: #99c5f1;
+  --color-blue-800: #bbd8f6;
+  --color-blue-900: #ddecfa;
+  --color-blue: #569fe8;
+
+  --color-onyx-100: #0a0b0b;
+  --color-onyx-200: #141616;
+  --color-onyx-300: #1f2122;
+  --color-onyx-400: #292c2d;
+  --color-onyx-500: #343839;
+  --color-onyx-600: #596163;
+  --color-onyx-700: #808a8c;
+  --color-onyx-800: #aab1b2;
+  --color-onyx-900: #d5d8d9;
+  --color-onyx: #343839;
+
+  --color-green-100: #092f17;
+  --color-green-200: #135e2e;
+  --color-green-300: #1c8d45;
+  --color-green-400: #25bb5c;
+  --color-green-500: #3fd977;
+  --color-green-600: #66e193;
+  --color-green-700: #8ce8ae;
+  --color-green-800: #b2f0c9;
+  --color-green-900: #d9f7e4;
+  --color-green: #3fd977;
+
+  --color-yellow-100: #333301;
+  --color-yellow-200: #666602;
+  --color-yellow-300: #999903;
+  --color-yellow-400: #cccc04;
+  --color-yellow-500: #fafa0c;
+  --color-yellow-600: #fbfb3b;
+  --color-yellow-700: #fcfc6c;
+  --color-yellow-800: #fdfd9d;
+  --color-yellow-900: #fefece;
+  --color-yellow: #fafa0c;
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --drop-shadow-solid-onyx: 0.05em 0.05em 0px #343839;
+
+  --animate-fade: fade 150ms ease-in 1;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  @keyframes fade {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
 
 @layer base {
   :root {
-    --color-white: 0, 0%, 100%;
-
-    --color-pink-100: 336, 97%, 14%;
-    --color-pink-200: 336, 97%, 28%;
-    --color-pink-300: 336, 97%, 42%;
-    --color-pink-400: 336, 97%, 56%;
-    --color-pink-500: 336, 97%, 70%;
-    --color-pink-600: 336, 97%, 76%;
-    --color-pink-700: 336, 98%, 82%;
-    --color-pink-800: 337, 97%, 88%;
-    --color-pink-900: 336, 100%, 94%;
-    --color-pink-default: var(--color-pink-500);
-
-    --color-blue-100: 210, 75%, 13%;
-    --color-blue-200: 210, 76%, 25%;
-    --color-blue-300: 210, 76%, 37%;
-    --color-blue-400: 210, 76%, 50%;
-    --color-blue-500: 210, 76%, 62%;
-    --color-blue-600: 210, 75%, 70%;
-    --color-blue-700: 210, 76%, 77%;
-    --color-blue-800: 211, 77%, 85%;
-    --color-blue-900: 209, 74%, 92%;
-    --color-blue-default: var(--color-blue-500);
-
-    --color-onyx-100: 180, 5%, 4%;
-    --color-onyx-200: 180, 5%, 8%;
-    --color-onyx-300: 200, 5%, 13%;
-    --color-onyx-400: 195, 5%, 17%;
-    --color-onyx-500: 192, 5%, 21%;
-    --color-onyx-600: 192, 5%, 37%;
-    --color-onyx-700: 190, 5%, 53%;
-    --color-onyx-800: 187, 5%, 68%;
-    --color-onyx-900: 195, 5%, 84%;
-    --color-onyx-default: var(--color-onyx-500);
-
-    --color-green-100: 142, 68%, 11%;
-    --color-green-200: 142, 66%, 22%;
-    --color-green-300: 142, 67%, 33%;
-    --color-green-400: 142, 67%, 44%;
-    --color-green-500: 142, 67%, 55%;
-    --color-green-600: 142, 67%, 64%;
-    --color-green-700: 142, 67%, 73%;
-    --color-green-800: 142, 67%, 82%;
-    --color-green-900: 142, 65%, 91%;
-    --color-green-default: var(--color-green-500);
-
-    --color-yellow-100: 60, 96%, 10%;
-    --color-yellow-200: 60, 96%, 20%;
-    --color-yellow-300: 60, 96%, 31%;
-    --color-yellow-400: 60, 96%, 41%;
-    --color-yellow-500: 60, 96%, 51%;
-    --color-yellow-600: 60, 96%, 61%;
-    --color-yellow-700: 60, 96%, 71%;
-    --color-yellow-800: 60, 96%, 80%;
-    --color-yellow-900: 60, 96%, 90%;
-    --color-yellow-default: var(--color-yellow-500);
-
-    --background: var(--color-white);
-    --foreground: var(--color-onyx-default);
-    --card: var(--color-white);
-    --card-foreground: var(--color-onyx-default);
-    --popover: var(--color-white);
-    --popover-foreground: var(--color-onyx-default);
+    --background: 0 0% 100%;
+    --foreground: 192 5% 21%;
+    --card: 0 0% 100%;
+    --card-foreground: 192 5% 21%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 192 5% 21%;
     --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
